@@ -1,2 +1,3 @@
 # index0
-Some other stuff
+
+Where it all begins.
