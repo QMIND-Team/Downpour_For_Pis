@@ -1,2 +1,3 @@
 # index0
-The beginning of something great!
+
+Where it all begins.
