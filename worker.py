@@ -1,17 +1,12 @@
 # Worker
 
 import json
-from comms import client
+import comms.client as cl
 
-client = comms.Client()
+
+client = cl.Client()
 
 init_message = json.loads({"type": "init"})
 init_resp = client.send(init_message)
 
-
-
-
-
-# need to pull
-message = "pull"
-pull_resp = client.send(message)
+print(init_resp)
