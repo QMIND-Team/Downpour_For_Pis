@@ -1,3 +1,11 @@
 # index0
 
-Where it all begins.
+Distributed Computing + Machine Learning = ???
+
+## Comms module
+
+Communicate files between server and client. 
+
+### Outstanding issues
+
+Sends multiple cofirmation messages once single "packet" size is exceeded.
