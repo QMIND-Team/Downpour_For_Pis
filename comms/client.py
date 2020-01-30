@@ -2,44 +2,53 @@
 
 import socket               # Import socket module
 
-def send_toManager(data: str, srvr: socket):
-      """Send string to Manager via the server module."""
-      
-      if data[-4:] == ".txt":
-            with open(data, 'rb') as f:
-                  print('File opened.')
-                  data = f.read(1024)
-                  while (data):
-                        srvr.send(data)
-                        data = f.read(1024)
+class Client():
+      def __init__(self):
+            manager_ip = "192.168.0.100" # TODO Replace this with reading manager's ip from config file
+            self.manager_ip = manager_ip
+            self.host = socket.gethostname() # Get local machine name
+            self.port = 12345
 
-                  print('Sent text file as string.')
-                  f.close()
+      def send(self, data: str):
+            """Send string to Manager via the server module."""
             
-      else:
-            srvr.send(data)
-            print('Sent string.')
-            
+            srvr = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            srvr.connect((self.host, self.port)) 
+
+
+            if data[-4:] == ".txt":
+                  with open(data, 'rb') as f:
+                        print('File opened.')
+                        data = f.read(1024)
+                        while (data):
+                              srvr.send(data)
+                              data = f.read(1024)
+
+                        print('Sent text file as string.')
+                        f.close()
+                  
+            else:
+                  srvr.send(data)
+                  print('Sent string.')
+
+            srvr.close()                     # Close the socket when done
+                  
       
 
 def main():
       """This is a script a Worker would run."""
 
-      s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-      host = socket.gethostname() # Get local machine name
-      port = 12345                # used in local transport protocol
-
-      s.connect((host, port)) 
+      client = Client()
 
       # if sending a string directly, make sure it doesn't end
       # with the .txt extenion!!!
       path_or_string = 'small_file.txt'
 
-      send_toManager(path_or_string, s)
+      client.send(path_or_string)
 
       print('Done sending')
       
-      s.close()                     # Close the socket when done
+      
 
 if __name__ == "__main__":
       main()
