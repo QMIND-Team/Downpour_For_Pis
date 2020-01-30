@@ -31,7 +31,13 @@ class Client():
                   srvr.send(data)
                   print('Sent string.')
 
+            # response = srvr.read()
+            
             srvr.close()                     # Close the socket when done
+
+
+            tmp = ""
+            return tmp
                   
       
 
@@ -44,8 +50,8 @@ def main():
       # with the .txt extenion!!!
       path_or_string = 'small_file.txt'
 
-      client.send(path_or_string)
-
+      response = client.send(path_or_string)
+      print(response)
       print('Done sending')
       
       
