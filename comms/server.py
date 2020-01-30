@@ -33,7 +33,7 @@ def main():
     while True:
         
         conn, addr = s.accept()     # Establish connection with client <3
-        print('Got connection from ' + str(addr))
+        print('Got connection from: ' + str(addr[0]))
         message = recv_fromWorker(conn) # receive string from socket connection
         print(message)
 
