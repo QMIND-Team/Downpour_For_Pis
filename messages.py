@@ -14,7 +14,7 @@ class Init(Message):
         super().__init__()
         self.type = "init"
         if data:
-            self.__dict__ = json.loads(data)
+            self.__dict__ = data
 
 class Init_Response(Message):
     def __init__(self, data=None):
@@ -27,4 +27,4 @@ class Init_Response(Message):
         self.metrics = []
         self.weights = ""
         if data:
-            self.__dict__ = json.loads(data)
+            self.__dict__ = data
