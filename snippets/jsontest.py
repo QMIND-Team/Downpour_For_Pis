@@ -3,7 +3,7 @@
 import json
 
 class Message():
-    def __init__(self, data=None):
+    def __init__(self):
         self.type = ""
 
     def __eq__(self, other):
@@ -11,9 +11,10 @@ class Message():
 
 class Init(Message):
     def __init__(self, data=None):
+        super().__init__()
         self.type = "init"
         if data:
-            self.__dict__ = json.loads(data)
+            self.__dict__ = data
 
 def test1():
     """Easy First.  Dict -> JSON -> Dict"""
