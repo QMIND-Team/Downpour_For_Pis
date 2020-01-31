@@ -20,6 +20,27 @@ Distributed Computing + Machine Learning = ???
 
 .
 
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
 
 ## Comms module
 
