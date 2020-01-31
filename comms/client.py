@@ -1,6 +1,5 @@
 """Transport module for sending strings to the manager."""
 
-import socket
 import json
 
 class Client():
