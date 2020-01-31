@@ -35,7 +35,6 @@ class Client():
             
             srvr.close()                     # Close the socket when done
 
-
             tmp = ""
             return tmp
                   
@@ -53,7 +52,6 @@ def main():
       response = client.send(path_or_string)
       print(response)
       print('Done sending')
-      
       
 
 if __name__ == "__main__":
