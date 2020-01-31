@@ -53,7 +53,11 @@ def test2():
 
     print(f"testjson is of type {type(testjson)}:\t\t{testjson}")
 
-    testback = Init(testjson)
+    testbackdict = json.loads(testjson)
+
+    print(f"testbackdict is of type {type(testbackdict)}:\t\t{testbackdict}")
+
+    testback = Init(testbackdict)
 
     print(f"testback is of type {type(testback)}:\t{testback.type}")
 
