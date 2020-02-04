@@ -1,61 +1,30 @@
 """Transport module for sending strings to the manager."""
 
-import socket               # Import socket module
+import json
 
 class Client():
       def __init__(self):
-            manager_ip = "192.168.0.100" # TODO Replace this with reading manager's ip from config file
-            self.manager_ip = manager_ip
-            self.host = socket.gethostname() # Get local machine name
-            self.port = 12345
+            """Whatever is needed for socket stuff"""
+            pass
+
+      def __fake_send_to_server(self, data):
+            """This is all happening on the server.  __ means private."""
+            # Make the response
+            resp_dict = {"type": "init_resp", "id": 7}
+            # type(resp_dict) == <class 'dict'>
+            resp_json = json.dumps(resp_dict)
+            # type(resp_json) == <class 'str'>
+            resp_raw = resp_json.encode()
+            # type(resp_raw) == <class 'bytes'>
+            return(resp_raw)
 
       def send(self, data: str):
-            """Send string to Manager via the server module."""
-            
-            srvr = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            srvr.connect((self.host, self.port)) 
+            """This is what worker calls."""
+            # Do the socket stuff to send "data" to the server
+            # Do the socket stuff to get "resp" from the server
+            resp_raw = self.__fake_send_to_server(data)
+            # type(resp_raw) == <class 'bytes'>
+            resp = resp_raw.decode()
+            # type(resp) == <class 'str'>
 
-
-            if data[-4:] == ".txt":
-                  with open(data, 'rb') as f:
-                        print('File opened.')
-                        data = f.read(1024)
-                        while (data):
-                              srvr.send(data)
-                              data = f.read(1024)
-
-                        print('Sent text file as string.')
-                        f.close()
-                  
-            else:
-                  srvr.send(data)
-                  print('Sent string.')
-
-            # response = srvr.read()
-            
-            srvr.close()                     # Close the socket when done
-
-
-            tmp = ""
-            return tmp
-                  
-      
-
-def main():
-      """This is a script a Worker would run."""
-
-      client = Client()
-
-      # if sending a string directly, make sure it doesn't end
-      # with the .txt extenion!!!
-      path_or_string = 'small_file.txt'
-
-      response = client.send(path_or_string)
-      print(response)
-      print('Done sending')
-      
-      
-
-if __name__ == "__main__":
-      main()
-   
+            return resp

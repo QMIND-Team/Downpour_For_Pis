@@ -1,0 +1,21 @@
+- Create all application-layer message types in messages.py
+    - create error message type as well
+
+- Implement the "write_response" function in 'manager.py'
+    - create the appropriate resopnse to the worker's message
+    - governs the application layer communication protocol
+
+- Develop cases and response protocols for communication failures
+
+- Develop failsafe for the existence of multiple managers
+    - If two exist, things might break!
+    - Should we support two managers on the same network?
+        - If so, how could we approach this?
+
+- Discuss metadata about workers that the manager should have
+    - this data would help manage and optimize work distribution
+    - potentially include:
+        - hostname (identification purposes)
+        - latency
+        - processor speed
+        - GPU availability
