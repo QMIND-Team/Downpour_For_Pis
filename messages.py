@@ -28,7 +28,7 @@ class Init_Response(Message):
         self.weights = ""
         if data:
             self.__dict__ = data
-
+            
 class Fetch(Message):
     """Request model parameters from the manager."""
     def __init__(self, data=None):
@@ -51,5 +51,3 @@ class Push(Message):
         self.type = "push"
         self.weights = ""
         if data: self.__dict__ = data
-
-
