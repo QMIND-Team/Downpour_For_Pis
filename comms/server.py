@@ -19,7 +19,6 @@ def recv_fromWorker(conn: socket):
     conn.close()                # Close the connection
     return ''.join(msg)
 
-
 def main():
     """This is a script that a Manager would run."""
     

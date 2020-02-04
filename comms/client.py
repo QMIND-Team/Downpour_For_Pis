@@ -28,7 +28,7 @@ class Client():
                         f.close()
                   
             else:
-                  srvr.send(data)
+                  srvr.send(data.encode(encoding='UTF-8'))
                   print('Sent string.')
 
             # response = srvr.read()
