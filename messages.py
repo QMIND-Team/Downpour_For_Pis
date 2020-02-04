@@ -1,7 +1,5 @@
 """TODO Module Docstring"""
 
-import json
-
 class Message():
     def __init__(self):
         self.type = ""
