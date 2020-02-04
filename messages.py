@@ -8,6 +8,7 @@ class Message():
         return self.__dict__ == other.__dict__
 
 class Init(Message):
+    """Initialization message sent by worker."""
     def __init__(self, data=None):
         super().__init__()
         self.type = "init"
@@ -15,6 +16,7 @@ class Init(Message):
             self.__dict__ = data
 
 class Init_Response(Message):
+    """Manager response to initialization message."""
     def __init__(self, data=None):
         super().__init__()
         self.type = "init_resp"
