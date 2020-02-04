@@ -1,0 +1,8 @@
+- Create all application-layer message types in messages.py
+    - create error message type as well
+
+- Implement the "write_response" function in 'manager.py'
+    - create the appropriate resopnse to the worker's message
+    - governs the application layer communication protocol
+
+- Develop cases and response protocols for communication failures
