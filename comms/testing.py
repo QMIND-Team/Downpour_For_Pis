@@ -1,12 +1,13 @@
 from client import Client
 from server import Server
-from serializeLibrary import serializeArray, deserializeArray, serializeModel
+from serializeLibrary import serializeArray, deserializeArray, serializeModel, deserializeModel
 import numpy as np 
 import keras
 import tensorflow as tf
 from keras import backend as k
+import pickle
 
-
+# example model to run our tests on
 model = keras.models.Sequential()
 model.add(keras.layers.Dense(12, input_dim=8, kernel_initializer='uniform', activation='relu'))
 model.add(keras.layers.Dense(8, kernel_initializer='uniform', activation='relu'))
@@ -41,4 +42,11 @@ model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']
 # testing the serialization of models
 cereal = serializeModel(model)
 print(type(cereal))
-# newModel = deserializeModel(cereal)
+newModel = deserializeModel(cereal)
+# now proving that the two models are equal:
+example = np.random.random((1,8))
+firstPrediction = model.predict(example)
+secondPrediction = newModel.predict(example)
+print(firstPrediction)
+print(secondPrediction)
+
