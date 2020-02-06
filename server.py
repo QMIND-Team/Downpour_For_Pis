@@ -2,13 +2,14 @@
 5 types of packets:
 
 init W->S
-caused  by: a worker turning on
+caused by: a worker turning on
 {
 	'type': 'init'
 }
-response: 
+response on server: the server sends an init_resp packet back
 
 init_resp S->W
+caused by: an init packet is recieved
 {
 	'type': 'init_resp'
 	'id': some kind of ID number
@@ -18,23 +19,28 @@ init_resp S->W
 	'loss': the loss the server's model uses
 	'metrics': the metrics the server's model uses
 }
+response on worker: the worker begins to train
 
 push W->S
 {
 	'type': 'push'
 	'weights': the parameters of the model on the worker
 }
+response on server: the model parameters are incorporated into the model
 
 pull W->S
 {
 	'type': 'pull'
 }
+resonse on server: sends the worker its current model parameters
 
 pull_resp S->W
+caused by: the worker sending a pull packet
 {
 	'type': 'pull_resp'
 	'weights': the parameters of the model on the server
 }
+resonse on worker: an update to the worker's parameters
 
 '''
 
