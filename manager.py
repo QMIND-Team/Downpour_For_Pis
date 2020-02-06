@@ -21,8 +21,12 @@ def build_response(msg: Message):
     return resp
 
 def main():
-    server = srvr.Server(build_response) 
-    server.run()
+    server = srvr.Server(build_response)
+    server.run() 
+
+    """ server.run() activates the workflow, and should probably be defined in the manager module.
+    We could develop a class for different ML jobs. This would let us provide the job type (specify
+    model specs like loss function, model type, optimizer, etc.) and the job structure for workers."""
 
 if __name__ == "__main__":
     main()

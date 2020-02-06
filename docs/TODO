@@ -1,5 +1,7 @@
+- Pass job information to the server from the manager script
+
 - Create all application-layer message types in messages.py
-    - create error message type as well
+    - create error message type
 
 - Implement the "write_response" function in 'manager.py'
     - create the appropriate resopnse to the worker's message
