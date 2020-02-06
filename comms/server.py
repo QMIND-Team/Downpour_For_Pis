@@ -1,40 +1,30 @@
 """Transport module for receiving data from Workers"""
 
-import socket
+import json
 
-def recv_fromWorker(conn: socket):
-    """Receive string from Worker via the client module."""
-    
-    msg = []
+class Server():
+      def __init__(self):
+            """Whatever is needed for socket stuff"""
+            pass
 
-    while True:
-        data = conn.recv(1024)
-        if data: print('Receiving data...') # may need to stitch messages together
-        if not data: break # if no more bits received
-        msg.append(data.decode(encoding='UTF-8')) # append decoded string
+      def __fake_receive_from_client(self):
+            """This is all happening on the client.  __ means private."""
+            # Make the call
+            dat_dict = {"type": "init"}
+            # type(dat_dict) == <class 'dict'>
+            dat_json = json.dumps(dat_dict)
+            # type(dat_json) == <class 'str'>
+            dat_raw = dat_json.encode()
+            # type(dat_raw) == <class 'bytes'>
+            return(dat_raw)
 
-    # confirm response?
-    # conn.send('Thank you for connecting'.encode(encoding='UTF-8'))
+      def run(self, func):
+            """This is what master calls."""
+            # Do the socket stuff to receive "data" from client
+            dat = self.__fake_receive_from_client().decode()
 
-    conn.close()                # Close the connection
-    return ''.join(msg)
+            resp = func(dat)    # Call the function you've been given
 
-def main():
-    """This is a script that a Manager would run."""
-    
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    host = socket.gethostname()
-    port = 12345                
-    s.bind((host, port))
-    s.listen(5)
-    print('Server listening...')
+            # Do the socket stuff to send "resp" to the client
 
-    while True:
-        
-        conn, addr = s.accept()     # Establish connection with client <3
-        print('Got connection from: ' + str(addr[0]))
-        message = recv_fromWorker(conn) # receive string from socket connection
-        print(message)
-
-if __name__ == '__main__':
-    main()
+            # And probably repeat forever!
