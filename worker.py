@@ -20,7 +20,8 @@ def main():
     else:
         raise TypeError("Didn't receive a known message type")
 
-    print(resp.id)
+    if(resp.id == 7):
+        print("W-C Success!")
 
 if __name__ == "__main__":
     main()
