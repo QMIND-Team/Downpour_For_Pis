@@ -1,9 +1,14 @@
 """Transport module for sending strings to the manager."""
 
 import json
+if __name__ == "__main__":
+      from config import MANAGER_IP
+else:
+      from comms.config import MANAGER_IP
 
 class Client():
       def __init__(self):
+            self.manager_ip = MANAGER_IP
             """Whatever is needed for socket stuff"""
             pass
 
