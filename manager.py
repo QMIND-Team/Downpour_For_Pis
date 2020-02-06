@@ -20,7 +20,7 @@ def deal_with_init(init_obj):
 
     return resp
 
-def respond(data: str):
+def make_response(data: str):
     """This holds all of the server logic"""
     data = json.loads(data)
 
@@ -35,8 +35,8 @@ def respond(data: str):
 
 def main():
     server = srvr.Server()
-    server.run(respond) # Give the server the "respond" function
-    print("Success! (Probably)")
+    server.run(make_response)
+    print("M-S Success!")
 
 if __name__ == "__main__":
     main()

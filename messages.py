@@ -1,6 +1,7 @@
 """TODO Module Docstring"""
 
 class Message():
+    """Base Message Class"""
     def __init__(self):
         self.type = ""
 

@@ -18,12 +18,12 @@ class Server():
             # type(dat_raw) == <class 'bytes'>
             return(dat_raw)
 
-      def run(self, func):
+      def run(self, make_response):
             """This is what master calls."""
             # Do the socket stuff to receive "data" from client
             dat = self.__fake_receive_from_client().decode()
 
-            resp = func(dat)    # Call the function you've been given
+            resp = make_response(dat)    # Call the function you've been given
 
             # Do the socket stuff to send "resp" to the client
 
