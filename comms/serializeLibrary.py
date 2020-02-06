@@ -1,7 +1,5 @@
 import numpy as np
 import io, json
-import pickle
-import h5py
 import keras
 
 def serializeArray(array):
@@ -19,11 +17,14 @@ def deserializeArray(string):
 def serializeModel(model):
 	dict = {}
 
+	# gets the information about each layer in the model
 	layers = []
 	for i in model.layers:
+		# luckily, keras will serialize the hard stuff for us
 		layers.append(keras.layers.serialize(i))
 	dict['layers'] = layers
 
+	# the weights are a numpy array, and so cannot be serialized with json, we will use the method above instead
 	dict['weights'] = serializeArray(model.get_weights())
 
 	# gets the training information that would otherwise have been passed to model.compile, ie the optimizer, loss, and metrics
@@ -35,17 +36,18 @@ def serializeModel(model):
 
 def deserializeModel(string):
 	dict = json.loads(string)
-
 	model = keras.models.Sequential()
 	
+	# adds the requred layers to the model
 	layers = dict['layers']
 	for i in layers:
 		model.add(keras.layers.deserialize(i))
 
+	# sets the weights
 	model.set_weights(deserializeArray(dict['weights']))
 
+	# in order for the model to be trained, it must be compiled, which requires an optimizer, loss, and metrics
 	optimizer = keras.optimizers.deserialize(dict['optimizer'])
-
 	model.compile(optimizer = optimizer, loss = dict['loss'], metrics = dict['metrics'])
 
 	return model
