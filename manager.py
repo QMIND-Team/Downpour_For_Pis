@@ -21,7 +21,7 @@ def deal_with_init(init_obj):
     return resp
 
 def respond(data: str):
-    """This holds all of the server logic"""
+    """This holds all of the server logic."""
     data = json.loads(data)
 
     if data["type"] == "init":
