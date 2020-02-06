@@ -1,7 +1,8 @@
-"""Transport module for receiving data from Workers"""
+"""Transport module for receiving data from workers."""
 
 from json import loads, dumps
 import socket
+import select
 from messages import Init, Init_Response, Fetch, Fetch_Response, Push, Terminate, Message
 
 class Server():
@@ -17,14 +18,23 @@ class Server():
             """Receive string from Worker via the client module."""
             
             msg = []
+            conn.settimeout(0.2) # is there a better way to do this???
             while True: # receive data 1024 bytes at a time
-                  data = conn.recv(1024)
-                  if data: print('Receiving data...')
-                  if not data: break
+                  try: data = conn.recv(1024)
+                  except: break
                   msg.append(data.decode(encoding='UTF-8')) # append decoded string
 
-            msg = ''.join(msg)
-            return loads(msg)
+            msg_dict = loads(''.join(msg)) # concatenate string and load JSON to dict
+
+            if msg_dict["type"] == "init":
+                  message = Init(msg_dict)
+            elif msg_dict["type"] == "fetch":
+                  message = Fetch(msg_dict)
+            elif msg_dict["type"] == "push":
+                  message = Push(msg_dict)
+            else: raise TypeError("Didn't receive a known message type")
+
+            return message
 
       def run(self):
             """Describes the workflow of the Manager."""
@@ -40,11 +50,12 @@ class Server():
                   # receive
                   conn, addr = s.accept()
                   msg = self.recv_fromWorker(conn)
-                  print(str(addr[0]) + " sent a "+ msg["type"] +" message")
+                  print(str(addr[0]) + " sent "+ msg.type +" message")
 
                   # respond
                   response = self.response_policy(msg)
-                  conn.send(response)
+                  resp_dict = dumps(response.__dict__)
+                  conn.send(resp_dict.encode(encoding='UTF-8'))
 
                   # close
                   conn.close()
