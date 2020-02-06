@@ -1,30 +1,31 @@
 """Transport module for receiving data from Workers"""
 
 import json
+import socket
+from messages import Init, Init_Response, Fetch, Fetch_Response, Push, Terminate, Message
 
 class Server():
-      def __init__(self):
-            """Whatever is needed for socket stuff"""
+      def __init__(self, response_policy: object):
+            manager_ip = "192.168.0.100" # TODO Replace this with reading manager's ip from config file
+            self.manager_ip = manager_ip
+            self.host = socket.gethostname() # Get local machine name
+            self.port = 12345
+            self.response_policy = response_policy # used Noun naming because it is treated like a Noun here
+
+      def recv_fromWorker(self, conn: socket):
+            """Receive string from Worker via the client module."""
+            
+            msg = []
+            while True: # receive data 1024 bytes at a time
+                  data = conn.recv(1024)
+                  if data: print('Receiving data...')
+                  if not data: break
+                  msg.append(data.decode(encoding='UTF-8')) # append decoded string
+
+            conn.send('hi')
+            conn.close()                # Close the connection
+            return ''.join(msg)
+
+      def run(self):
+            """Describes the workflow of the Manager."""
             pass
-
-      def __fake_receive_from_client(self):
-            """This is all happening on the client.  __ means private."""
-            # Make the call
-            dat_dict = {"type": "init"}
-            # type(dat_dict) == <class 'dict'>
-            dat_json = json.dumps(dat_dict)
-            # type(dat_json) == <class 'str'>
-            dat_raw = dat_json.encode()
-            # type(dat_raw) == <class 'bytes'>
-            return(dat_raw)
-
-      def run(self, func):
-            """This is what master calls."""
-            # Do the socket stuff to receive "data" from client
-            dat = self.__fake_receive_from_client().decode()
-
-            resp = func(dat)    # Call the function you've been given
-
-            # Do the socket stuff to send "resp" to the client
-
-            # And probably repeat forever!

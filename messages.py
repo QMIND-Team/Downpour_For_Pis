@@ -1,6 +1,7 @@
 """TODO Module Docstring"""
 
 class Message():
+    """Base message class."""
     def __init__(self):
         self.type = ""
 
@@ -12,8 +13,7 @@ class Init(Message):
     def __init__(self, data=None):
         super().__init__()
         self.type = "init"
-        if data:
-            self.__dict__ = data
+        if data: self.__dict__ = data
 
 class Init_Response(Message):
     """Manager response to initialization message."""
@@ -26,15 +26,14 @@ class Init_Response(Message):
         self.optimizer = ""
         self.metrics = []
         self.weights = ""
-        if data:
-            self.__dict__ = data
+        if data: self.__dict__ = data
             
 class Fetch(Message):
     """Request model parameters from the manager."""
     def __init__(self, data=None):
-        super().__init__() # why do we do this again??
+        super().__init__()
         self.type = "fetch"
-        if data: self.__dict__ = data #why do we do this again?
+        if data: self.__dict__ = data
 
 class Fetch_Response(Message):
     """Return model parameters to the worker that requested them."""
@@ -50,4 +49,11 @@ class Push(Message):
         super().__init__()
         self.type = "push"
         self.weights = ""
+        if data: self.__dict__ = data
+
+class Terminate(Message):
+    """WHAT ARE YOU DOUUUUINGGK? KILL MEEH NAAHHOUUUU!!!!"""
+    def __init__(self, data=None):
+        super().__init__()
+        self.type = "terminate"
         if data: self.__dict__ = data
