@@ -15,7 +15,6 @@ class Client():
             srvr = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             srvr.connect((self.host, self.port)) 
 
-
             if data[-4:] == ".txt":
                   with open(data, 'rb') as f:
                         print('File opened.')
