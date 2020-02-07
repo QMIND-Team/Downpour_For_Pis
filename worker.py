@@ -11,7 +11,7 @@ from messages import Message, Init, Init_Response, Push, Fetch, Fetch_Response, 
 def send_and_receive(message: Message, cl: client):
     """Prepare the message and send it through the client"""
     message_dict = message.__dict__
-    message_json = json.loads(message_dict)
+    message_json = json.dumps(message_dict)
     response = cl.send(message_json)
     # Determine the type of message and bring it back to an object
     resp_dict = response.__dict__
@@ -90,7 +90,7 @@ def main():
 
     init_response = None
     while init_response is None:
-        init_response = cl.send(init)
+        init_response = send_and_receive(init, cl)
 
     print(init_response)
 
