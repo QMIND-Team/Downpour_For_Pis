@@ -14,14 +14,15 @@ def send_and_receive(message: Message, cl: client):
     message_json = json.dumps(message_dict)
     response = cl.send(message_json)
     # Determine the type of message and bring it back to an object
-    resp_dict = response.__dict__
+    resp_dict = json.loads(response)
     if resp_dict["type"] == "init_resp":
         response = Init_Response(resp_dict)
     elif resp_dict["type"] == "fetch_resp":
         response = Fetch_Response(resp_dict)
     elif resp_dict["type"] == "terminate":
         response = Terminate(resp_dict)
-    else: raise TypeError("Didn't receive a known message type")
+    else:
+        raise TypeError("Didn't receive a known message type")
     return response
 
 

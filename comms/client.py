@@ -30,6 +30,8 @@ class Client():
             srvr.close()
             return None
 
+        response = ''.join(resp)
+
         srvr.close()                     # Close the socket when done
 
-        return resp
+        return response
