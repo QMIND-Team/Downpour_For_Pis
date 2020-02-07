@@ -1,30 +1,51 @@
-"""Transport module for receiving data from Workers"""
+"""Transport module for receiving data from workers."""
 
-import json
+import socket
 
 class Server():
-      def __init__(self):
-            """Whatever is needed for socket stuff"""
-            pass
+    def __init__(self, response_policy: object):
+        """response_policy is a method describing how to reply to different message types."""
+        manager_ip = "192.168.0.100" # TODO Replace this with reading manager's ip from config file
+        self.manager_ip = manager_ip
+        self.host = socket.gethostname() # Get local machine name
+        self.port = 12345
+        self.response_policy = response_policy # used Noun naming because it is treated like a Noun here
 
-      def __fake_receive_from_client(self):
-            """This is all happening on the client.  __ means private."""
-            # Make the call
-            dat_dict = {"type": "init"}
-            # type(dat_dict) == <class 'dict'>
-            dat_json = json.dumps(dat_dict)
-            # type(dat_json) == <class 'str'>
-            dat_raw = dat_json.encode()
-            # type(dat_raw) == <class 'bytes'>
-            return(dat_raw)
+    def recv_fromWorker(self, conn: socket):
+        """Receive string from Worker via the client module."""
+        
+        msg = []
+        conn.settimeout(0.2) # is there a better way to do this???
+        while True: # receive data 1024 bytes at a time
+            try:
+                data = conn.recv(1024)
+            except:
+                break
+            msg.append(data.decode(encoding='UTF-8')) # append decoded string
 
-      def run(self, make_response):
-            """This is what master calls."""
-            # Do the socket stuff to receive "data" from client
-            dat = self.__fake_receive_from_client().decode()
+        message = ''.join(msg) # concatenate string
 
-            resp = make_response(dat)    # Call the function you've been given
+        return message
 
-            # Do the socket stuff to send "resp" to the client
+    def run(self):
+        """Describes the workflow of the Manager."""
 
-            # And probably repeat forever!
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        host = socket.gethostname()
+        port = 12345
+        s.bind((host, port))
+        s.listen(5)
+        print('Server listening...')
+
+        while True:
+            # receive
+            conn, addr = s.accept()
+            msg = self.recv_fromWorker(conn)
+            print(str(addr[0]) + " sent "+ msg)
+
+            # respond
+            response = self.response_policy(msg)
+            conn.send(response.encode(encoding='UTF-8'))
+
+            # close
+            conn.close()
