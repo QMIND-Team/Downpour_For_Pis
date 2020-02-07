@@ -1,11 +1,14 @@
 """Transport module for sending strings to the manager."""
 
 import socket
+if __name__ == "__main__":
+      from config import MANAGER_IP
+else:
+      from comms.config import MANAGER_IP
 
 class Client():
     def __init__(self):
-        manager_ip = "192.168.0.100" # TODO Replace this with reading manager's ip from config file
-        self.manager_ip = manager_ip
+        self.manager_ip = MANAGER_IP
         self.host = socket.gethostname() # Get local machine name
         self.port = 12345
 

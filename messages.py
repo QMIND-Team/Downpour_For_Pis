@@ -1,7 +1,7 @@
 """Message structure for worker and manager communication."""
 
 class Message():
-    """Base message class."""
+    """Base Message Class"""
     def __init__(self):
         self.type = ""
 
