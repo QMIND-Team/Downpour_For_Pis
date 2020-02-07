@@ -16,11 +16,11 @@ def send_and_receive(message: Message, cl: client):
     # Determine the type of message and bring it back to an object
     resp_dict = response.__dict__
     if resp_dict["type"] == "init_resp":
-            response = Init_Response(resp_dict)
+        response = Init_Response(resp_dict)
     elif resp_dict["type"] == "fetch_resp":
-            response = Fetch_Response(resp_dict)
+        response = Fetch_Response(resp_dict)
     elif resp_dict["type"] == "terminate":
-            response = Terminate(resp_dict)
+        response = Terminate(resp_dict)
     else: raise TypeError("Didn't receive a known message type")
     return response
 
@@ -32,7 +32,7 @@ def push_weights(model, cl: client):
     # Model.save
     message.weights = "whatever"
     response = send_and_receive(message, cl)
-    if (response.type == "terminate"):
+    if response.type == "terminate":
         return False
     return True
 
@@ -43,7 +43,7 @@ def pull_parameters(model, cl: client):
     message = Fetch()
     response = send_and_receive(message, cl)
 
-    if (response.type == "terminate"):
+    if response.type == "terminate":
         return False
 
     # Check the response type
@@ -53,17 +53,17 @@ def pull_parameters(model, cl: client):
 
 
 def do_ml(model, cl: client):
-    while(True):
+    while True:
         # do machine learning
         # the downpour stuff yeah
 
         # When it's time
-        if (not push_weights(model, cl)):
+        if not push_weights(model, cl):
             # Allow for early exits
             break
 
         # When it's time
-        if (not pull_parameters(model, cl)):
+        if not pull_parameters(model, cl):
             # Early exit
             break
 
@@ -91,7 +91,7 @@ def main():
     init_response = None
     while init_response is None:
         init_response = cl.send(init)
-    
+
     print(init_response)
 
     # Connected
