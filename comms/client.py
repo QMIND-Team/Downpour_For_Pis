@@ -1,8 +1,6 @@
 """Transport module for sending strings to the manager."""
 
-from json import loads, dumps
 import socket
-from messages import Init_Response, Fetch_Response, Terminate
 
 class Client():
       def __init__(self):
@@ -15,9 +13,7 @@ class Client():
             """Send string to Manager via the server module. Works differently than Server.send()"""
             
             srvr = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            srvr.connect((self.host, self.port)) 
-
-            msg = dumps(msg.__dict__)
+            srvr.connect((self.host, self.port))
 
             srvr.send(msg.encode(encoding='UTF-8'))
             print('Sent message.')
@@ -33,16 +29,6 @@ class Client():
                   srvr.close()
                   return None
 
-            resp_dict = loads(''.join(resp)) # concatenate string and load JSON to dict
-
-            if resp_dict["type"] == "init_resp":
-                  response = Init_Response(resp_dict)
-            elif resp_dict["type"] == "fetch_resp":
-                  response = Fetch_Response(resp_dict)
-            elif resp_dict["type"] == "terminate":
-                  response = Terminate(resp_dict)
-            else: raise TypeError("Didn't receive a known message type")
-
             srvr.close()                     # Close the socket when done
 
-            return response
+            return resp
