@@ -1,9 +1,6 @@
 """Transport module for receiving data from workers."""
 
-from json import loads, dumps
 import socket
-import select
-from messages import Init, Init_Response, Fetch, Fetch_Response, Push, Terminate, Message
 
 class Server():
       def __init__(self, response_policy: object):
@@ -24,15 +21,7 @@ class Server():
                   except: break
                   msg.append(data.decode(encoding='UTF-8')) # append decoded string
 
-            msg_dict = loads(''.join(msg)) # concatenate string and load JSON to dict
-
-            if msg_dict["type"] == "init":
-                  message = Init(msg_dict)
-            elif msg_dict["type"] == "fetch":
-                  message = Fetch(msg_dict)
-            elif msg_dict["type"] == "push":
-                  message = Push(msg_dict)
-            else: raise TypeError("Didn't receive a known message type")
+            message = ''.join(msg) # concatenate string
 
             return message
 
@@ -46,17 +35,15 @@ class Server():
             s.listen(5)
             print('Server listening...')
             
-            while True:  
+            while True:
                   # receive
                   conn, addr = s.accept()
                   msg = self.recv_fromWorker(conn)
-                  print(str(addr[0]) + " sent "+ msg.type +" message")
+                  print(str(addr[0]) + " sent "+ msg)
 
                   # respond
                   response = self.response_policy(msg)
-                  resp_dict = dumps(response.__dict__)
-                  conn.send(resp_dict.encode(encoding='UTF-8'))
+                  conn.send(response.encode(encoding='UTF-8'))
 
                   # close
                   conn.close()
-
