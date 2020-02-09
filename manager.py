@@ -27,6 +27,8 @@ def response_policy(msg_json: str):
         resp_obj = Fetch_Response(serial.serializeArray(model.get_weights()))
     elif msg_dict["type"] == "push":        # do we have policy on this yet???
         resp_obj = None
+        weightArray = serial.deserializeArray(msg_dict.weights)
+        model.set_weights(weightArray)
     else: raise TypeError("Didn't receive a known message type.")
 
     resp = json.dumps(resp_obj.__dict__)

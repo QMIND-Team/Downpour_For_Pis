@@ -45,10 +45,10 @@ class Fetch_Response(Message):
 
 class Push(Message):
     """Supply the manager with model information."""
-    def __init__(self, data=None):
+    def __init__(self, weights, data=None):
         super().__init__()
         self.type = "push"
-        self.weights = ""
+        self.weights = weights
         if data:
             self.__dict__ = data
 

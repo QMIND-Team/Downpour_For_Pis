@@ -4,12 +4,25 @@ import json
 import comms.client as client
 from messages import Message, Init, Init_Response, Push, Fetch, Fetch_Response, Terminate
 import comms.serializeLibrary as serial
+import mnist
+import numpy as np
+import tensorflow as tf
+keras = tf.keras
+from math import ceil as ceiling
 
-# TODO: Rename these functions to reflect what we're actually pushing and pulling.
-# i.e. choose one of: push/pull_weights, push/pull_parameters, push/pull_gradients
+BATCH_SIZE = 32
 
+# importing and formatting training data
+x_train_raw = mnist.train_images()
+y_train_raw = mnist.train_labels()
+x_train = np.array(x_train_raw)
+y_train = np.array(y_train_raw)
+x_train = x_train.reshape(60000, 28*28)
+x_train = x_train.astype("float32")
+x_train = x_train/255.0
+y_train = keras.utils.to_categorical(y_train, 10)
 
-def send_and_receive(message: message, cl: client):
+def send_and_receive(message: Message, cl: client):
     """Prepare the message and send it through the client"""
     message_dict = message.__dict__
     message_json = json.dumps(message_dict)
@@ -30,7 +43,7 @@ def send_and_receive(message: message, cl: client):
 
 def push_weights(modelWeights, cl: client):
     """Push *thing* up to manager"""
-    message = Push()
+    message = Push(serial.serializeArray(modelWeights))
     message.weights = "whatever"
     response = send_and_receive(message, cl)
     if response.type == "terminate":
@@ -47,6 +60,10 @@ def pull_parameters(model, cl: client):
     if response.type == "terminate":
         return False
 
+    if response.type == "fetch_resp":
+        new_weights = serial.deserializeArray(response.weights)
+        model.set_weights(new_weights)
+
     # Check the response type
     # Update parameters or gradients or whatever
 
@@ -55,21 +72,22 @@ def pull_parameters(model, cl: client):
 
 def do_ml(model, cl: client):
     while True:
-        # do machine learning
-        # the downpour stuff yeah
+        # for i in range(0, ceiling(len(x_train)/BATCH_SIZE)):
+        #     model.fit()
 
-        # When it's time
-        if not push_weights(modelWeights, cl):
-            # Allow for early exits
-            break
+        #     # When it's time
+        #     if not push_weights(modelWeights, cl):
+        #         # Allow for early exits
+        #         break
 
-        # When it's time
-        if not pull_parameters(model, cl):
-            # Early exit
-            break
+        #     # When it's time
+        #     if not pull_parameters(model, cl):
+        #         # Early exit
+        #         break
 
-        # And we're done
-        break
+        #     # And we're done
+        #     break
+        pass
 
 
 
@@ -88,6 +106,7 @@ def main():
 
     init = Init()
 
+    print('waiting for init response')
     init_response = None
     while init_response is None:
         init_response = send_and_receive(init, cl)
