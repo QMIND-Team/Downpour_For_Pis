@@ -18,3 +18,4 @@ alered pull_parameters in worker.py to alter its models parameters based on weig
 
 imported and formatted training data in worker.py
 
+in both server.py and client.py, removed the import of MANAGER_IP and switched to manually configuring it to the address of my personal computer on my home network. Also changed the call to bind in the run function in Server to bind to (self.manager_ip, self.port) instead of the local variables (host, port).

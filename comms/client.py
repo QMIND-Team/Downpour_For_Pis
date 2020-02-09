@@ -1,23 +1,18 @@
 """Transport module for sending strings to the manager."""
 
 import socket
-if __name__ == "__main__":
-      from config import MANAGER_IP
-else:
-      from comms.config import MANAGER_IP
 
 class Client():
     def __init__(self):
-        self.manager_ip = MANAGER_IP
-        self.host = socket.gethostname() # Get local machine name
+        self.manager_ip = '192.168.2.51'
         self.port = 12345
 
     def send(self, msg: str):
         """Send string to Manager via the server module. Works differently than Server.send()"""
         
         srvr = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        srvr.connect((self.host, self.port))
-
+        srvr.connect((self.manager_ip, self.port))
+        
         srvr.send(msg.encode(encoding='UTF-8'))
         print('Sent message.')
 

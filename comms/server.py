@@ -1,16 +1,11 @@
 """Transport module for receiving data from workers."""
 
 import socket
-if __name__ == "__main__":
-      from config import MANAGER_IP
-else:
-      from comms.config import MANAGER_IP
 
 class Server():
     def __init__(self, response_policy: object):
         """response_policy is a method describing how to reply to different message types."""
-        self.manager_ip = MANAGER_IP
-        self.host = socket.gethostname() # Get local machine name
+        self.manager_ip = '192.168.2.51'
         self.port = 12345
         self.response_policy = response_policy # used Noun naming because it is treated like a Noun here
 
@@ -34,9 +29,7 @@ class Server():
         """Describes the workflow of the Manager."""
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        host = socket.gethostname()
-        port = 12345
-        s.bind((host, port))
+        s.bind((self.manager_ip, self.port))
         s.listen(5)
         print('Server listening...')
 
