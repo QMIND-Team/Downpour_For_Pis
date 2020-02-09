@@ -1,5 +1,3 @@
-from client import Client
-from server import Server
 from serializeLibrary import serializeArray, deserializeArray, serializeModel, deserializeModel
 import numpy as np
 import keras

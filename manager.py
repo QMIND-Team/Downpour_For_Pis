@@ -4,6 +4,17 @@ import json
 
 from messages import Init, Init_Response, Fetch, Fetch_Response, Push, Terminate, Message
 import comms.server as srvr
+import comms.serializeLibrary as serial
+import numpy as np
+import tensorflow as tf
+keras = tf.keras
+
+# testing on model designed to solve MNIST
+model = keras.models.Sequential()
+model.add(keras.layers.Dense(512, activation="relu", input_shape=(784,)) )
+model.add(keras.layers.Dense(512, activation="relu"))
+model.add(keras.layers.Dense(10, activation="softmax"))
+model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 
 def response_policy(msg_json: str):
     """The manager's response policy to different messages. Returns a message."""
@@ -11,14 +22,10 @@ def response_policy(msg_json: str):
 
     if msg_dict["type"] == "init":
         msg = Init(msg_dict)
-        resp_obj = Init_Response()
-        # Do anything necessary
-        # Make the response
+        resp_obj = Init_Response(serial.serializeModel(model))
     elif msg_dict["type"] == "fetch":
-        # TODO as above
-        resp_obj = Fetch_Response()
+        resp_obj = Fetch_Response(serial.serializeArray(model.get_weights()))
     elif msg_dict["type"] == "push":        # do we have policy on this yet???
-        # TODO as above, and lots more
         resp_obj = None
     else: raise TypeError("Didn't receive a known message type.")
 

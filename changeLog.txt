@@ -1,0 +1,11 @@
+moved seializeLibrary.py to comms
+
+imported and used MANAGER_IP from config.py in server.py
+
+altered __init__ in Init_Response class in messages.py to take a string representation of a model as a parameter, and add it to self under the name model, instead of serveral attributes like model, wieghts loss, etc. Also altered response_policy in manager.py accordingly.
+
+altered __init__ in Fetch_Response class in messages.py to take a string representation of model parameters as a parameter, and add it to self under the name weights. Also altered response_policy in manager.py accordingly.
+
+in manager.py, created a keras model designed to solve MNIST
+
+in worker.py, altered initialize_model to actually parse and return a keras model
