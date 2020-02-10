@@ -12,7 +12,7 @@ def deserializeArray(string):
 	memFile = io.BytesIO()
 	memFile.write(json.loads(string).encode('latin-1'))
 	memFile.seek(0)
-	return np.load(memFile)
+	return np.load(memFile, allow_pickle=True)
 
 def serializeModel(model):
 	dict = {}
@@ -30,7 +30,13 @@ def serializeModel(model):
 	# gets the training information that would otherwise have been passed to model.compile, ie the optimizer, loss, and metrics
 	dict['optimizer'] = keras.optimizers.serialize(model.optimizer)
 	dict['loss'] = model.loss
-	dict['metrics'] = model.metrics
+
+	# gets the metrics
+	metrics = []
+	for i in model.metrics:
+		# all .compile needs is a list of strings of names of metrics, we can get this from the config object of each metric
+		metrics.append(i.get_config()['name'])
+	dict['metrics'] = metrics
 
 	return json.dumps(dict)
 
@@ -39,8 +45,7 @@ def deserializeModel(string):
 	model = keras.models.Sequential()
 	
 	# adds the requred layers to the model
-	layers = dict['layers']
-	for i in layers:
+	for i in dict['layers']:
 		model.add(keras.layers.deserialize(i))
 
 	# sets the weights
@@ -48,6 +53,7 @@ def deserializeModel(string):
 
 	# in order for the model to be trained, it must be compiled, which requires an optimizer, loss, and metrics
 	optimizer = keras.optimizers.deserialize(dict['optimizer'])
+
 	model.compile(optimizer = optimizer, loss = dict['loss'], metrics = dict['metrics'])
 
 	return model
