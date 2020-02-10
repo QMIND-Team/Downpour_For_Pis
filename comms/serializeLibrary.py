@@ -28,7 +28,7 @@ def serializeModel(model):
 	dict['weights'] = serializeArray(model.get_weights())
 
 	# gets the training information that would otherwise have been passed to model.compile, ie the optimizer, loss, and metrics
-	dict['optimizer'] = keras.optimizers.serialize(model.optimizer)
+	dict['optimizer'] = keras.optimizers.serialize(model.optimizer)['class_name']
 	dict['loss'] = model.loss
 
 	# gets the metrics
@@ -52,9 +52,8 @@ def deserializeModel(string):
 	model.set_weights(deserializeArray(dict['weights']))
 
 	# in order for the model to be trained, it must be compiled, which requires an optimizer, loss, and metrics
-	optimizer = keras.optimizers.deserialize(dict['optimizer'])
 
-	model.compile(optimizer = optimizer, loss = dict['loss'], metrics = dict['metrics'])
+	model.compile(optimizer = dict['optimizer'], loss = dict['loss'], metrics = dict['metrics'])
 
 	return model
 	

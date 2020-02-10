@@ -18,7 +18,7 @@ class Init(Message):
 
 class Init_Response(Message):
     """Manager response to initialization message."""
-    def __init__(self, modelStr, data=None):
+    def __init__(self, modelStr='', data=None):
         super().__init__()
         self.type = "init_resp"
         self.id = 0
@@ -36,7 +36,7 @@ class Fetch(Message):
 
 class Fetch_Response(Message):
     """Return model parameters to the worker that requested them."""
-    def __init__(self, modelParams, data=None):
+    def __init__(self, modelParams='', data=None):
         super().__init__()
         self.type = "fetch_resp"
         self.weights = modelParams
@@ -45,7 +45,7 @@ class Fetch_Response(Message):
 
 class Push(Message):
     """Supply the manager with model information."""
-    def __init__(self, weights, data=None):
+    def __init__(self, weights='', data=None):
         super().__init__()
         self.type = "push"
         self.weights = weights

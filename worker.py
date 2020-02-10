@@ -7,20 +7,20 @@ import comms.serializeLibrary as serial
 import mnist
 import numpy as np
 import tensorflow as tf
-keras = tf.keras
+import keras
 from math import ceil as ceiling
 
 BATCH_SIZE = 32
 
 # importing and formatting training data
-x_train_raw = mnist.train_images()
-y_train_raw = mnist.train_labels()
-x_train = np.array(x_train_raw)
-y_train = np.array(y_train_raw)
-x_train = x_train.reshape(60000, 28*28)
-x_train = x_train.astype("float32")
-x_train = x_train/255.0
-y_train = keras.utils.to_categorical(y_train, 10)
+# x_train_raw = mnist.train_images()
+# y_train_raw = mnist.train_labels()
+# x_train = np.array(x_train_raw)
+# y_train = np.array(y_train_raw)
+# x_train = x_train.reshape(60000, 28*28)
+# x_train = x_train.astype("float32")
+# x_train = x_train/255.0
+# y_train = keras.utils.to_categorical(y_train, 10)
 
 def send_and_receive(message: Message, cl: client):
     """Prepare the message and send it through the client"""
@@ -28,6 +28,7 @@ def send_and_receive(message: Message, cl: client):
     message_json = json.dumps(message_dict)
     response = cl.send(message_json)
     # Determine the type of message and bring it back to an object
+    print(response)
     resp_dict = json.loads(response)
     if resp_dict["type"] == "init_resp":
         response = Init_Response(data=resp_dict)
@@ -71,7 +72,8 @@ def pull_parameters(model, cl: client):
 
 
 def do_ml(model, cl: client):
-    while True:
+    print('doing ml stuff')
+    # while True:
         # for i in range(0, ceiling(len(x_train)/BATCH_SIZE)):
         #     model.fit()
 
@@ -87,7 +89,7 @@ def do_ml(model, cl: client):
 
         #     # And we're done
         #     break
-        pass
+        # pass
 
 
 

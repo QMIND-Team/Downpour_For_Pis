@@ -14,7 +14,7 @@ altered __init__ in Push class in messages.py to take a string representation of
 
 altered response_policy in manager.py to alter the model's weights based on the wieghts in a push message
 
-alered pull_parameters in worker.py to alter its models parameters based on weights in a fetch_response message
+altered pull_parameters in worker.py to alter its models parameters based on weights in a fetch_response message
 
 imported and formatted training data in worker.py
 
