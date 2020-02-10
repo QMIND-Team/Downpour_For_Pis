@@ -26,8 +26,9 @@ def response_policy(msg_json: str):
     elif msg_dict["type"] == "fetch":
         resp_obj = Fetch_Response(serial.serializeArray(model.get_weights()))
     elif msg_dict["type"] == "push":        # do we have policy on this yet???
-        resp_obj = None
-        weightArray = serial.deserializeArray(msg_dict.weights)
+        # for testing purposes, obviously we dont want to kill the worker right after it pushes its weights
+        resp_obj = Terminate()
+        weightArray = serial.deserializeArray(msg_dict['weights'])
         model.set_weights(weightArray)
     else: raise TypeError("Didn't receive a known message type.")
 
