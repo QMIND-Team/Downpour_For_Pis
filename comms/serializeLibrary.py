@@ -27,7 +27,6 @@ def serializeModel(model):
 	# the weights are a numpy array, and so cannot be serialized with json, we will use the method above instead
 	dict['weights'] = serializeArray(model.get_weights())
 
-	# gets the training information that would otherwise have been passed to model.compile, ie the optimizer, loss, and metrics
 	dict['optimizer'] = keras.optimizers.serialize(model.optimizer)['class_name']
 	dict['loss'] = model.loss
 
@@ -52,7 +51,6 @@ def deserializeModel(string):
 	model.set_weights(deserializeArray(dict['weights']))
 
 	# in order for the model to be trained, it must be compiled, which requires an optimizer, loss, and metrics
-
 	model.compile(optimizer = dict['optimizer'], loss = dict['loss'], metrics = dict['metrics'])
 
 	return model

@@ -7,13 +7,13 @@ import comms.server as srvr
 import comms.serializeLibrary as serial
 import numpy as np
 import tensorflow as tf
-keras = tf.keras
+import keras
 
 # testing on model designed to solve MNIST
 model = keras.models.Sequential()
-model.add(keras.layers.Dense(512, activation="relu", input_shape=(784,)) )
-model.add(keras.layers.Dense(512, activation="relu"))
-model.add(keras.layers.Dense(10, activation="softmax"))
+model.add(keras.layers.Dense(10, activation="relu", input_shape=(5,)) )
+# model.add(keras.layers.Dense(512, activation="relu"))
+# model.add(keras.layers.Dense(10, activation="softmax"))
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 
 def response_policy(msg_json: str):
