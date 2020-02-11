@@ -9,7 +9,7 @@ class Server():
         self.manager_ip = manager_ip
         self.host = socket.gethostname() # Get local machine name
         self.port = 12345
-        self.response_policy = response_policy # used Noun naming because it is treated like a Noun here
+        self.response_policy = response_policy
 
     def recv_fromWorker(self, conn: socket):
         """Receive string from Worker via the client module."""
