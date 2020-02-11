@@ -34,7 +34,7 @@ def serializeModel(model):
 	metrics = []
 	for i in model.metrics:
 		# all .compile needs is a list of strings of names of metrics, we can get this from the config object of each metric
-		metrics.append(i.get_config()['name'])
+		metrics.append(i)
 	dict['metrics'] = metrics
 
 	return json.dumps(dict)
@@ -54,6 +54,3 @@ def deserializeModel(string):
 	model.compile(optimizer = dict['optimizer'], loss = dict['loss'], metrics = dict['metrics'])
 
 	return model
-	
-
-
