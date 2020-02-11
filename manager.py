@@ -67,11 +67,19 @@ def response_policy(model, msg_json: str):
     elif msg_dict["type"] == "pull":
         msg = Pull(msg_dict)
         resp_obj = Pull_Response()
-        resp_obj.weights = model.get_weights()
+        weights_np = model.get_weights()
+        weights = []
+        for weight in weights_np:
+            weights.append(weight.tolist())
+        resp_obj.weights = weights
     elif msg_dict["type"] == "push":
         msg = Push(msg_dict)
+        remote_weights_np = []
+        for remote_weight in msg.weights:
+            remote_weights_np.append(np.array(remote_weight))
+
         weights = []
-        weights.append(msg.weights)
+        weights.append(remote_weights_np)
         weights.append(model.get_weights())
 
         # <https://stackoverflow.com/questions/48212110/average-weights-in-keras-models>

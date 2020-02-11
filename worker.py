@@ -3,6 +3,7 @@
 import json
 import keras
 from keras.datasets import mnist
+import numpy as np
 
 import comms.client as client
 from messages import Message, Init, Init_Response, Push, Pull, Pull_Response, Terminate, Empty
@@ -35,7 +36,11 @@ def send_and_receive(message: Message, cl: client):
 def push_weights(model, cl: client):
     """Push model weights up to manager"""
     message = Push()
-    message.weights = model.get_weights()
+    weights_np = model.get_weights()
+    weights = []
+    for weight in weights_np:
+        weights.append(weight.tolist())
+    message.weights = weights
     response = send_and_receive(message, cl)
 
     if response.type == "terminate":
@@ -52,7 +57,10 @@ def pull_parameters(model, cl: client):
     if response.type == "terminate":
         return False
     if response.type == "pull_resp":
-        model.set_weights(response.weights)
+        server_weights_np = []
+        for server_weight in response.weights:
+            server_weights_np.append(np.array(server_weight))
+        model.set_weights(server_weights_np)
         return True
     return False
 
