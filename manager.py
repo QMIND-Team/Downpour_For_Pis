@@ -60,8 +60,8 @@ def response_policy(model, msg_json: str):
     if msg_dict["type"] == "init":
         msg = Init(msg_dict)
         resp_obj = Init_Response()
-        # Do anything necessary
-        # Make the response
+        serialized = model.to_json()
+        resp_obj.model = serialized
     elif msg_dict["type"] == "fetch":
         # TODO as above
         resp_obj = Fetch_Response()
@@ -77,7 +77,7 @@ def response_policy(model, msg_json: str):
 
 def main():
     model = init_model()
-    server = srvr.Server(response_policy)
+    server = srvr.Server(response_policy, model)
     server.run()
 
 if __name__ == "__main__":
