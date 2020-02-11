@@ -30,19 +30,19 @@ class Init_Response(Message):
         if data:
             self.__dict__ = data
             
-class Fetch(Message):
+class Pull(Message):
     """Request model parameters from the manager."""
     def __init__(self, data=None):
         super().__init__()
-        self.type = "fetch"
+        self.type = "pull"
         if data:
             self.__dict__ = data
 
-class Fetch_Response(Message):
+class Pull_Response(Message):
     """Return model parameters to the worker that requested them."""
     def __init__(self, data=None):
         super().__init__()
-        self.type = "fetch_resp"
+        self.type = "pull_resp"
         self.weights = ""
         if data:
             self.__dict__ = data

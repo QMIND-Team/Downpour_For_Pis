@@ -5,7 +5,7 @@ import keras
 from keras.datasets import mnist
 
 import comms.client as client
-from messages import Message, Init, Init_Response, Push, Fetch, Fetch_Response, Terminate, Empty
+from messages import Message, Init, Init_Response, Push, Pull, Pull_Response, Terminate, Empty
 
 # TODO: Rename these functions to reflect what we're actually pushing and pulling.
 # i.e. choose one of: push/pull_weights, push/pull_parameters, push/pull_gradients
@@ -20,8 +20,8 @@ def send_and_receive(message: Message, cl: client):
     resp_dict = json.loads(response)
     if resp_dict["type"] == "init_resp":
         response = Init_Response(resp_dict)
-    elif resp_dict["type"] == "fetch_resp":
-        response = Fetch_Response(resp_dict)
+    elif resp_dict["type"] == "pull_resp":
+        response = Pull_Response(resp_dict)
     elif resp_dict["type"] == "terminate":
         response = Terminate(resp_dict)
     elif resp_dict["type"] == "empty":
@@ -37,6 +37,7 @@ def push_weights(model, cl: client):
     message = Push()
     message.weights = model.get_weights()
     response = send_and_receive(message, cl)
+
     if response.type == "terminate":
         return False
     return True
@@ -44,17 +45,17 @@ def push_weights(model, cl: client):
 
 
 def pull_parameters(model, cl: client):
-    """Pull *things* from manager"""
-    message = Fetch()
+    """Pull model weights from manager"""
+    message = Pull()
     response = send_and_receive(message, cl)
 
     if response.type == "terminate":
         return False
+    if response.type == "pull_resp":
+        model.set_weights(response.weights)
+        return True
+    return False
 
-    # Check the response type
-    # Update parameters or gradients or whatever
-
-    return True
 
 
 def do_ml(model, cl: client):
@@ -89,11 +90,11 @@ def do_ml(model, cl: client):
 
     #model.fit(x_train, y_train, batch_size=128, epochs=10)
 
-    print('pushing parameters')
-    push_weights(model, cl)
+    if not push_weights(model, cl):
+        return
 
-    print('pulling parameters')
-    pull_parameters(model, cl)
+    if not pull_parameters(model, cl):
+        return
 
 
 

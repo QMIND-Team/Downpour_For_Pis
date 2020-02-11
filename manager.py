@@ -8,7 +8,7 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.models import Sequential
 import numpy as np
 
-from messages import Init, Init_Response, Fetch, Fetch_Response, Push 
+from messages import Init, Init_Response, Pull, Pull_Response, Push 
 from messages import Message, Terminate, Empty
 import comms.server as srvr
 
@@ -64,10 +64,10 @@ def response_policy(model, msg_json: str):
         resp_obj = Init_Response()
         serialized = model.to_json()
         resp_obj.model = serialized
-    elif msg_dict["type"] == "fetch":
-        
-        # TODO as above
-        resp_obj = Fetch_Response()
+    elif msg_dict["type"] == "pull":
+        msg = Pull(msg_dict)
+        resp_obj = Pull_Response()
+        resp_obj.weights = model.get_weights()
     elif msg_dict["type"] == "push":
         msg = Push(msg_dict)
         weights = []
