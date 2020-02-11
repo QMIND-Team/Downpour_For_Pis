@@ -2,18 +2,22 @@
 
 import socket
 if __name__ == "__main__":
-      from config import MANAGER_IP
+    from config import MANAGER_IP
 else:
-      from comms.config import MANAGER_IP
+    from comms.config import MANAGER_IP
 
 class Client():
     def __init__(self):
+        """Client Constructor"""
         self.manager_ip = MANAGER_IP
         self.host = socket.gethostname() # Get local machine name
         self.port = 12345
 
     def send(self, msg: str):
-        """Send string to Manager via the server module. Works differently than Server.send()"""
+        """Send string to Manager via the server module
+        
+        Works differently than Server.send()
+        """
         
         srvr = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         srvr.connect((self.host, self.port))
@@ -35,6 +39,6 @@ class Client():
 
         response = ''.join(resp)
 
-        srvr.close()                     # Close the socket when done
+        srvr.close()
 
         return response
