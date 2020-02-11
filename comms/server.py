@@ -48,7 +48,7 @@ class Server():
             print(f"{str(addr[0])} sent {json.loads(msg)['type']} message")
 
             # respond
-            response = self.response_policy(msg)
+            response = self.response_policy(model, msg)
             conn.send(response.encode(encoding='UTF-8'))
 
             # close

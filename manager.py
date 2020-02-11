@@ -6,8 +6,10 @@ from keras.datasets import mnist
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Dense, Dropout, Flatten
 from keras.models import Sequential
+import numpy as np
 
-from messages import Init, Init_Response, Fetch, Fetch_Response, Push, Terminate, Message
+from messages import Init, Init_Response, Fetch, Fetch_Response, Push 
+from messages import Message, Terminate, Empty
 import comms.server as srvr
 
 def init_model():
@@ -51,8 +53,8 @@ def init_model():
 
 
 def response_policy(model, msg_json: str):
-    """The manager's response policy to different messages. 
-    
+    """The manager's response policy to different messages.
+
     Returns: json formatted string
     """
     msg_dict = json.loads(msg_json)
@@ -63,11 +65,27 @@ def response_policy(model, msg_json: str):
         serialized = model.to_json()
         resp_obj.model = serialized
     elif msg_dict["type"] == "fetch":
+        
         # TODO as above
         resp_obj = Fetch_Response()
     elif msg_dict["type"] == "push":
-        # TODO as above, and lots more
-        resp_obj = None
+        msg = Push(msg_dict)
+        weights = []
+        weights.append(msg.weights)
+        weights.append(model.get_weights())
+
+        # <https://stackoverflow.com/questions/48212110/average-weights-in-keras-models>
+        # <https://arxiv.org/abs/1803.05407>
+
+        new_weights = []
+        for weights_list_tuple in zip(*weights):
+            new_weights.append(
+                [np.array(weights_).mean(axis=0)\
+                    for weights_ in zip(*weights_list_tuple)])
+
+        model.set_weights(new_weights)
+
+        resp_obj = Empty()
     else:
         raise TypeError("Didn't receive a known message type.")
 
@@ -77,7 +95,7 @@ def response_policy(model, msg_json: str):
 
 def main():
     model = init_model()
-    server = srvr.Server(response_policy, model)
+    server = srvr.Server(model, response_policy)
     server.run()
 
 if __name__ == "__main__":

@@ -63,3 +63,11 @@ class Terminate(Message):
         self.type = "terminate"
         if data:
             self.__dict__ = data
+
+class Empty(Message):
+    """Empty Message"""
+    def __init__(self, data=None):
+        super().__init__()
+        self.type = "empty"
+        if data:
+            self.__dict__ = data
