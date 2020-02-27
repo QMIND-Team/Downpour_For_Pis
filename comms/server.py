@@ -17,21 +17,18 @@ class Server():
         self.response_policy = response_policy
         self.model = model
 
-    def recv_fromWorker(self, conn: socket):
+    def recv_from_worker(self, conn):
         """Receive string from Worker via the client module."""
         
-        msg = []
-        conn.settimeout(0.2) # is there a better way to do this???
-        while True: # receive data 1024 bytes at a time
-            try:
-                data = conn.recv(1024)
-            except:
-                break
-            msg.append(data.decode(encoding='UTF-8')) # append decoded string
-
-        message = ''.join(msg) # concatenate string
-
-        return message
+        length = int.from_bytes(conn.recv(4), 'big')
+        chunks = []
+        total_received = 0
+        while total_received < length:
+            chunk = conn.recv(min(length - total_received, 2048))
+            total_received += len(chunk)
+        
+        message = b''.join(chunks)
+        return message.decode(encoding='UTF-8')
 
     def run(self):
         """Describes the workflow of the Manager."""
@@ -44,12 +41,12 @@ class Server():
         while True:
             # receive
             conn, addr = s.accept()
-            msg = self.recv_fromWorker(conn)
+            msg = self.recv_from_worker(conn)
             print(f"{str(addr[0])} sent {json.loads(msg)['type']} message")
 
             # respond
             response = self.response_policy(self.model, msg)
-            conn.send(response.encode(encoding='UTF-8'))
+            conn.send(response.encode(encoding='UTF-8'))    # TODO FIX
 
             # close
             conn.close()
