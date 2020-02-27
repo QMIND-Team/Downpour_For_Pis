@@ -1,54 +1,43 @@
 """Transport module for sending strings to the manager."""
 
 import socket
+
 if __name__ == "__main__":
     from config import MANAGER_IP
+    from config import PORT
+    from socket_helper import mysend, myrecv
 else:
+    from comms.socket_helper import mysend, myrecv
     from comms.config import MANAGER_IP
+    from comms.config import PORT
 
 class Client():
     def __init__(self):
         """Client Constructor"""
         self.manager_ip = MANAGER_IP
         self.host = socket.gethostname() # Get local machine name
-        self.port = 12345
+        self.port = PORT
 
-    def send(self, msg: str):
+    def send(self, message: str):
             """Send string to Manager via the server module.
 
             Works differently than Server.send()
             """
             
-            srvr = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            srvr.connect((self.host, self.port))
+            conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            conn.connect((self.host, self.port))
 
-            msg = msg.encode(encoding='UTF-8')
-            length = len(msg)
-            length_in_bytes = length.to_bytes(4, 'big')
-
-            srvr.send(length_in_bytes)
-
-            total_sent = 0
-            while total_sent < length:
-                  bytes_sent = srvr.send(msg[total_sent:])
-                  if (bytes_sent == 0):
-                        return False
-                  total_sent += bytes_sent
+            msg = message.encode(encoding='UTF-8')
             
-            resp = []
-            srvr.settimeout(5.0) # is there a better way to do this???
-            while True: # receive data 1024 bytes at a time
-                  data = srvr.recv(1024).decode(encoding='UTF-8') # TODO Fix
-                  if data == '':
-                        break
-            resp.append(data) # append decoded string
+            mysend(conn, msg)
+            
+            resp = myrecv(conn)
+            response = resp.decode(encoding='UTF-8')
 
-            if resp is None: # shut down and retry
-                  srvr.close()
-                  return None
+            # if resp is None: # shut down and retry
+            #       conn.close()
+            #       return None
 
-            response = ''.join(resp)
-
-            srvr.close()
+            conn.close()
 
             return response
