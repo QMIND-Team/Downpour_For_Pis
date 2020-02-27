@@ -1,6 +1,7 @@
 '''How to work with bits and bytes in python'''
 
-test = "aklsjdf;alksjdf;alksdjfa;lksdjf"
+test = "aklsjdf;alksjdf;alksdjfa;lk++sdjf"
+test = test.encode('UTF-8')
 
 length = len(test)
 print(length)
