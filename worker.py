@@ -1,6 +1,8 @@
 """Worker"""
 
 import json
+
+import tensorflow as tf
 import keras
 from keras.datasets import mnist
 import numpy as np
@@ -8,9 +10,10 @@ import numpy as np
 import comms.client as client
 from messages import Message, Init, Init_Response, Push, Pull, Pull_Response, Terminate, Empty
 
+tf.compat.v1.logging.set_verbosity( tf.compat.v1.logging.ERROR)
+
 # TODO: Rename these functions to reflect what we're actually pushing and pulling.
 # i.e. choose one of: push/pull_weights, push/pull_parameters, push/pull_gradients
-
 
 def send_and_receive(message: Message, cl: client):
     """Prepare the message and send it through the client"""
@@ -96,7 +99,7 @@ def do_ml(model, cl: client):
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 
-    #model.fit(x_train, y_train, batch_size=128, epochs=10)
+    model.fit(x_train, y_train, batch_size=128, epochs=10)
 
     if not push_weights(model, cl):
         return

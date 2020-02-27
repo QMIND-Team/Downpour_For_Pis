@@ -1,10 +1,7 @@
 """Transport module for receiving data from workers."""
 
-import tensorflow as tf
 import json     # For debugging only
 import socket
-
-tf.compat.v1.logging.set_verbosity( tf.compat.v1.logging.ERROR)
 
 if __name__ == "__main__":
     from config import MANAGER_IP
@@ -24,18 +21,6 @@ class Server():
         self.response_policy = response_policy
         self.model = model
 
-    def recv_from_worker(self, conn):
-        """Receive string from Worker via the client module."""
-        
-        length = int.from_bytes(conn.recv(4), 'big')
-        chunks = []
-        total_received = 0
-        while total_received < length:
-            chunk = conn.recv(min(length - total_received, 2048))
-            total_received += len(chunk)
-        
-        message = b''.join(chunks)
-        return message.decode(encoding='UTF-8')
 
     def run(self):
         """Describes the workflow of the Manager."""

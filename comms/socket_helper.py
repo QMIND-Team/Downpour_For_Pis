@@ -19,5 +19,6 @@ def myrecv(conn):
     while total_received < length:
         chunk = conn.recv(min(length - total_received, 2048))
         total_received += len(chunk)
+        chunks.append(chunk)
     data = b''.join(chunks)
     return data

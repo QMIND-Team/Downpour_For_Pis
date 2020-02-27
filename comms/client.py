@@ -19,25 +19,22 @@ class Client():
         self.port = PORT
 
     def send(self, message: str):
-            """Send string to Manager via the server module.
+        """Send string to Manager via the server module"""
+        
+        conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        conn.connect((self.host, self.port))
 
-            Works differently than Server.send()
-            """
-            
-            conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            conn.connect((self.host, self.port))
+        msg = message.encode(encoding='UTF-8')
 
-            msg = message.encode(encoding='UTF-8')
-            
-            mysend(conn, msg)
-            
-            resp = myrecv(conn)
-            response = resp.decode(encoding='UTF-8')
+        mysend(conn, msg)
+        
+        resp = myrecv(conn)
+        response = resp.decode(encoding='UTF-8')
 
-            # if resp is None: # shut down and retry
-            #       conn.close()
-            #       return None
+        # if resp is None: # shut down and retry
+        #       conn.close()
+        #       return None
 
-            conn.close()
+        conn.close()
 
-            return response
+        return response

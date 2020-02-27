@@ -1,6 +1,8 @@
 """Manager"""
 
 import json
+
+import tensorflow as tf
 import keras
 from keras.datasets import mnist
 from keras.layers import Conv2D, MaxPooling2D
@@ -11,6 +13,8 @@ import numpy as np
 from messages import Init, Init_Response, Pull, Pull_Response, Push 
 from messages import Message, Terminate, Empty
 import comms.server as srvr
+
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 def init_model():
     """Create the model.
