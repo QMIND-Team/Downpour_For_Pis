@@ -13,11 +13,14 @@ class Server():
         """Receive string from Worker via the client module."""
         
         msg = []
-        conn.settimeout(0.2) # is there a better way to do this???
+        conn.settimeout(0.5) # is there a better way to do this???
         while True: # receive data 1024 bytes at a time
             try:
                 data = conn.recv(1024)
-            except:
+                print(data)
+            except Exception as e:
+                print('the bed hath been shat')
+                print(e)
                 break
             msg.append(data.decode(encoding='UTF-8')) # append decoded string
 

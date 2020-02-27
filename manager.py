@@ -12,8 +12,8 @@ import keras
 # testing on model designed to solve MNIST
 model = keras.models.Sequential()
 model.add(keras.layers.Dense(10, activation="relu", input_shape=(5,)) )
-# model.add(keras.layers.Dense(512, activation="relu"))
-# model.add(keras.layers.Dense(10, activation="softmax"))
+model.add(keras.layers.Dense(512, activation="relu"))
+model.add(keras.layers.Dense(10, activation="softmax"))
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 
 def response_policy(msg_json: str):
@@ -33,6 +33,7 @@ def response_policy(msg_json: str):
     else: raise TypeError("Didn't receive a known message type.")
 
     resp = json.dumps(resp_obj.__dict__)
+    # print(resp)
 
     return resp
 
