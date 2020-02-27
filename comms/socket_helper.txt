@@ -1,0 +1,26 @@
+def send_data(conn, data):
+    length = len(data)
+    total_sent = 0
+    while total_sent < length:
+        try:
+            bytes_sent = conn.send(data[total_sent:])
+        except ConnectionResetError:
+            return False
+        if not bytes_sent:
+            return False
+        total_sent += bytes_sent
+    return True
+
+def receive_data(conn, length):
+    chunks = []
+    total_received = 0
+    while total_received < length:
+        try:
+            chunk = conn.recv(min(length - total_received, 2048))
+        except ConnectionResetError:
+            return False
+        if not len(chunk):
+            return False
+        chunks.append(chunk)
+        total_received += len(chunk)
+    return b''.join(chunks)
