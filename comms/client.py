@@ -22,7 +22,7 @@ class Client():
         """Send string to Manager via the server module"""
         
         conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        conn.connect((self.host, self.port))
+        conn.connect((self.manager_ip, self.port))
 
         msg = message.encode(encoding='UTF-8')
 
