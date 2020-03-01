@@ -13,6 +13,7 @@ class Init(Message):
     def __init__(self, data=None):
         super().__init__()
         self.type = "init"
+        self.hostname = ""
         if data:
             self.__dict__ = data
 
