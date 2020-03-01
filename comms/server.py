@@ -16,7 +16,6 @@ class Server():
     def __init__(self, model, response_policy):
         """Server Constructor"""
         self.manager_ip = MANAGER_IP
-        self.host = socket.gethostname() # Get local machine name
         self.port = PORT
         self.response_policy = response_policy
         self.model = model
@@ -26,7 +25,7 @@ class Server():
         """Describes the workflow of the Manager."""
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((self.host, self.port))
+        s.bind((self.manager_ip, self.port))
         s.listen(5)
         print('Server listening...')
 

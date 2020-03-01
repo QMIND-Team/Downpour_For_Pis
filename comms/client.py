@@ -15,7 +15,6 @@ class Client():
     def __init__(self):
         """Client Constructor"""
         self.manager_ip = MANAGER_IP
-        self.host = socket.gethostname() # Get local machine name
         self.port = PORT
 
     def send(self, message: str):
