@@ -8,7 +8,7 @@ class Device():
         self.name = name
         self.manager = manager
         self.border = 2
-        if manager:
+        if self.manager:
             self.radius = 30
         else:
             self.radius = 15
@@ -17,6 +17,7 @@ class Device():
 
 def create_visual(device_list: list):
     """Return screen."""
+    pygame.init()
 
     size  = 600, 400 # width, height
     screen = pygame.display.set_mode(size)
@@ -24,7 +25,7 @@ def create_visual(device_list: list):
     return update_visual(screen, device_list)
 
 
-def update_visual(screen: pygame.Surface, device_list: list): # keep an actions list and do animations using it???
+def update_visual(screen: pygame.Surface, device_list: list):
     """Update based on device list."""
 
     for event in pygame.event.get(): 
@@ -57,22 +58,25 @@ def update_visual(screen: pygame.Surface, device_list: list): # keep an actions 
 
 
 def main():
-    pygame.init()
-
-    # devices = [Device('pi1', False), Device('manager', True), Device('pi6', False)]
-    devices = [Device('pi1', False), Device('manager', True), Device('pi6', False), Device('pi2', False), Device('pi2', False), Device('pi2', False), Device('pi2', False)]
+    devices = [
+        Device('pi1', False),
+        Device('manager', True),
+        Device('pi6', False),
+        Device('pi2', False),
+        Device('pi2', False),
+        Device('pi2', False),
+        Device('pi2', False)
+        ]
     screen = create_visual(devices)
 
-    """This should be where we want any opportunity to quit"""
-    # for event in pygame.event.get(): 
-    #     if event.type == pygame.QUIT: 
-    #         sys.exit()
+    # Main loop
+    while 
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT: 
+                sys.exit()
 
     sleep(3)
-    
-
 
 
 if __name__ == '__main__':
     main()
-    
