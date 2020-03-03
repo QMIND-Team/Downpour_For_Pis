@@ -1,6 +1,7 @@
 """Worker"""
 
 import json
+import os
 
 import tensorflow as tf
 import keras
@@ -120,6 +121,7 @@ def main():
     # Initialize
     cl = client.Client()
     init = Init()
+    init.hostname = os.uname()[1]
 
     init_response = None
     while init_response is None:
