@@ -4,7 +4,7 @@ from math import floor
 
 class Device():
     """For tracking relevant visualization data."""
-    def __init__(self, name: str, manager = False):
+    def __init__(self, name: str, manager=False):
         self.name = name
         self.manager = manager
         self.border = 2
@@ -19,7 +19,7 @@ def create_visual(device_list: list):
     """Return screen."""
     pygame.init()
 
-    size  = 600, 400 # width, height
+    size = (600, 400) # width, height
     screen = pygame.display.set_mode(size)
 
     return update_visual(screen, device_list)
@@ -71,8 +71,8 @@ def main():
 
     # Main loop
     while 1:
-        for event in pygame.event.get(): 
-            if event.type == pygame.QUIT: 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 sys.exit()
 
     sleep(3)
