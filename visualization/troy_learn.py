@@ -8,7 +8,7 @@ SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
 
 class Device(pygame.sprite.Sprite):
-    """Device Object, extends """
+    """Device Object, extends Sprite.  ID is name"""
     def __init__(self, font, name, x, y):
         super(Device, self).__init__()
         self.active = True
@@ -53,67 +53,85 @@ class Device(pygame.sprite.Sprite):
             self.surf = self.images[0]
 
 
-def reposition_workers(workers):
-    """Helper to reposition the workers once one is added or removed"""
+def reposition_workers(workers, lines_surf):
+    """Helper to reposition the workers once one is added or removed
+    Also update the lines
+    """
     num = len(workers)
     if num % 2 == 0:
-        for i, device in enumerate(workers):
-            device.rect.centerx = (SCREEN_WIDTH // 2) + 120 + (240 * (i - (num//2)))
-            device.text_rect.centerx = device.rect.centerx
+        for i, worker in enumerate(workers):
+            worker.rect.centerx = (SCREEN_WIDTH // 2) + 120 + (240 * (i - (num//2)))
+            worker.text_rect.centerx = worker.rect.centerx
     else:
-        for i, device in enumerate(workers):
-            device.rect.centerx = (SCREEN_WIDTH // 2) + (240 * (i - (num//2)))
-            device.text_rect.centerx = device.rect.centerx
+        for i, worker in enumerate(workers):
+            worker.rect.centerx = (SCREEN_WIDTH // 2) + (240 * (i - (num//2)))
+            worker.text_rect.centerx = worker.rect.centerx
+    lines_surf.fill((255, 255, 255))
+    for worker in workers:
+        pygame.draw.aaline(
+            lines_surf,
+            (0, 0, 0),
+            (worker.rect.centerx, worker.rect.centery - 85),
+            (SCREEN_WIDTH//2, SCREEN_HEIGHT//4 + 120)
+        )
 
 
-def add_worker(devices, workers, font, name):
+def add_worker(lines_surf, devices, workers, font, name):
+    """Add a worker"""
     new_device = Device(font, name, 0, (SCREEN_HEIGHT // 4)*3)
     devices.add(new_device)
     workers.add(new_device)
-    reposition_workers(workers)
+    reposition_workers(workers, lines_surf)
 
 
-def remove_worker(devices, workers, name):
+def remove_worker(lines_surf, devices, workers, name):
+    """Remove a worker"""
     sprites = workers.sprites()
     to_remove = None
     for sprite in sprites:
         if sprite.name == name:
             to_remove = sprite
             break
-    devices.remove(sprite)
-    workers.remove(sprite)
-    reposition_workers(workers)
+    devices.remove(to_remove)
+    workers.remove(to_remove)
+    reposition_workers(workers, lines_surf)
+
 
 def init():
-    """Initialization stuff"""
+    """Initialize pygame and main game elements"""
     pygame.init()
     myfont = pygame.freetype.SysFont('consolas', 30)
-    size = (SCREEN_WIDTH, SCREEN_HEIGHT)
-    screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
-    pygame.display.toggle_fullscreen()
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
     pygame.display.set_caption("CUCAI 2020 - Distributed Computing")
     clock = pygame.time.Clock()
 
+    # Create the lines surface
+    lines_surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+    lines_surf.fill((255, 255, 255))
+
     # Create the sprites
-    manager = Device(myfont, "Manager", SCREEN_WIDTH//2, SCREEN_HEIGHT //4)
+    manager = Device(myfont, "Manager", SCREEN_WIDTH//2, SCREEN_HEIGHT//4)
 
     # Collect the devices
     devices = pygame.sprite.Group()
     devices.add(manager)
 
-    # Create user event
+    # Group for workers
+    workers = pygame.sprite.Group()
+
+    # Create User Events
     CHANGE = pygame.USEREVENT+1
     ADD = pygame.USEREVENT+2
     REMOVE = pygame.USEREVENT+3
 
-    return screen, clock, devices, CHANGE, ADD, REMOVE, myfont
+    return screen, lines_surf, clock, devices, workers, CHANGE, ADD, REMOVE, myfont
 
 
 def main():
     """Main"""
     # Initialize
-    screen, clock, devices, CHANGE, ADD, REMOVE, myfont = init()
-    workers = pygame.sprite.Group()
+    screen, lines_surf, clock, devices, workers, CHANGE, ADD, REMOVE, myfont = init()
+
 
     # Main loop
     running = True
@@ -144,17 +162,19 @@ def main():
                 for device in devices:
                     device.change_pic()
             elif event.type == ADD:
-                add_worker(devices, workers, myfont, event.name)
+                add_worker(lines_surf, devices, workers, myfont, event.name)
             elif event.type == REMOVE:
-                remove_worker(devices, workers, event.name)
+                remove_worker(lines_surf, devices, workers, event.name)
 
-        # Respond to keypresses
-        pressed_keys = pygame.key.get_pressed()
-        for device in devices:
-            device.update(pressed_keys)
+        # # Respond to keypresses
+        # pressed_keys = pygame.key.get_pressed()
+        # for device in devices:
+        #     device.update(pressed_keys)
 
         # Draw
         screen.fill((255, 255, 255))
+
+        screen.blit(lines_surf, lines_surf.get_rect())
 
         for device in devices:
             screen.blit(device.surf, device.rect)
@@ -162,8 +182,8 @@ def main():
 
         pygame.display.flip()
 
-        # Run at 60 fps (max)
-        clock.tick(60)
+        # Run at 30 fps (max)
+        clock.tick(30)
 
     pygame.quit()
     sys.exit()
