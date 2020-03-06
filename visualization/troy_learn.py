@@ -53,17 +53,17 @@ class Device(pygame.sprite.Sprite):
             self.surf = self.images[0]
 
 
-def add_device(devices, clients, font, name):
+def add_worker(devices, workers, font, name):
     new_device = Device(font, name, 0, (SCREEN_HEIGHT // 4)*3)
     devices.add(new_device)
-    clients.add(new_device)
-    num = len(clients)
+    workers.add(new_device)
+    num = len(workers)
     if num % 2 == 0:
-        for i, device in enumerate(clients):
+        for i, device in enumerate(workers):
             device.rect.centerx = (SCREEN_WIDTH // 2) + 120 + (240 * (i - (num//2)))
             device.text_rect.centerx = device.rect.centerx
     else:
-        for i, device in enumerate(clients):
+        for i, device in enumerate(workers):
             device.rect.centerx = (SCREEN_WIDTH // 2) + (240 * (i - (num//2)))
             device.text_rect.centerx = device.rect.centerx
 
@@ -96,7 +96,7 @@ def main():
     """Main"""
     # Initialize
     screen, clock, devices, CHANGE, ADD, myfont = init()
-    clients = pygame.sprite.Group()
+    workers = pygame.sprite.Group()
 
     # Main loop
     running = True
@@ -124,7 +124,7 @@ def main():
                 for device in devices:
                     device.change_pic()
             elif event.type == ADD:
-                add_device(devices, clients, myfont, event.name)
+                add_worker(devices, workers, myfont, event.name)
 
         # Respond to keypresses
         pressed_keys = pygame.key.get_pressed()
