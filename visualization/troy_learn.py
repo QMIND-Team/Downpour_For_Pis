@@ -7,6 +7,8 @@ import pygame.freetype
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
 
+UNDER_MANAGER = (SCREEN_WIDTH//2, SCREEN_HEIGHT//4 + 120)
+
 class Device(pygame.sprite.Sprite):
     """Device Object, extends Sprite.  ID is name"""
     def __init__(self, font, name, x, y):
@@ -53,6 +55,61 @@ class Device(pygame.sprite.Sprite):
             self.surf = self.images[0]
 
 
+class Ping(pygame.sprite.Sprite):
+    """Ping object"""
+    def __init__(self, color, to_pos):
+        super(Ping, self).__init__()
+        self.image = pygame.Surface((10, 10))
+        self.image.fill((255, 255, 255))
+        self.image.set_colorkey((255, 255, 255))
+        self.rect = pygame.draw.circle(
+            self.image, color, self.image.get_rect().center, 5
+        )
+        self.to_pos = to_pos
+
+    def update(self):
+        """Move the ping along its path"""
+        curr = pygame.Vector2(self.rect.center)
+        end = pygame.Vector2(self.to_pos)
+        direction = end-curr
+        if direction.length() < 10:
+            self.rect.center = self.to_pos
+        else:
+            direction.scale_to_length(10)
+            moved = curr + direction
+            self.rect.center = (moved.x, moved.y)
+
+
+def send_ping(workers, pings, worker_name, push):
+    """Send a ping between the worker and manager"""
+    worker = None
+    for worker_tmp in workers:
+        if worker_tmp.name == worker_name:
+            worker = worker_tmp
+    color = None
+    from_pos = None
+    to_pos = None
+    if push:
+        color = (255, 0, 0)
+        to_pos = UNDER_MANAGER
+        from_pos = (worker.rect.centerx, worker.rect.centery - 85)
+    else:
+        color = (0, 255, 0)
+        to_pos = (worker.rect.centerx, worker.rect.centery - 85)
+        from_pos = UNDER_MANAGER
+
+    new_ping = Ping(color, to_pos)
+    new_ping.rect.center = from_pos
+    pings.add(new_ping)
+
+
+def check_pings(pings):
+    pings_tmp = pings.copy()
+    for ping in pings_tmp:
+        if ping.rect.center == ping.to_pos:
+            pings.remove(ping)
+
+
 def reposition_workers(workers, lines_surf):
     """Helper to reposition the workers once one is added or removed
     Also update the lines
@@ -72,7 +129,7 @@ def reposition_workers(workers, lines_surf):
             lines_surf,
             (0, 0, 0),
             (worker.rect.centerx, worker.rect.centery - 85),
-            (SCREEN_WIDTH//2, SCREEN_HEIGHT//4 + 120)
+            UNDER_MANAGER
         )
 
 
@@ -109,28 +166,28 @@ def init():
     lines_surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
     lines_surf.fill((255, 255, 255))
 
-    # Create the sprites
-    manager = Device(myfont, "Manager", SCREEN_WIDTH//2, SCREEN_HEIGHT//4)
-
-    # Collect the devices
+    # Sprite Groups
     devices = pygame.sprite.Group()
-    devices.add(manager)
-
-    # Group for workers
     workers = pygame.sprite.Group()
+    pings = pygame.sprite.Group()
+
+    # Create the manager
+    manager = Device(myfont, "Manager", SCREEN_WIDTH//2, SCREEN_HEIGHT//4)
+    devices.add(manager)
 
     # Create User Events
     CHANGE = pygame.USEREVENT+1
     ADD = pygame.USEREVENT+2
     REMOVE = pygame.USEREVENT+3
+    PING = pygame.USEREVENT+4
 
-    return screen, lines_surf, clock, devices, workers, CHANGE, ADD, REMOVE, myfont
+    return screen, lines_surf, clock, devices, workers, pings, CHANGE, ADD, REMOVE, PING, myfont
 
 
 def main():
     """Main"""
     # Initialize
-    screen, lines_surf, clock, devices, workers, CHANGE, ADD, REMOVE, myfont = init()
+    screen, lines_surf, clock, devices, workers, pings, CHANGE, ADD, REMOVE, PING, myfont = init()
 
 
     # Main loop
@@ -156,6 +213,9 @@ def main():
                 elif event.key == pygame.K_s:
                     my_event = pygame.event.Event(REMOVE, name="A")
                     pygame.event.post(my_event)
+                elif event.key == pygame.K_p:
+                    my_event = pygame.event.Event(PING, push=True, name="A")
+                    pygame.event.post(my_event)
             elif event.type == pygame.QUIT:
                 running = False
             elif event.type == CHANGE:
@@ -165,6 +225,8 @@ def main():
                 add_worker(lines_surf, devices, workers, myfont, event.name)
             elif event.type == REMOVE:
                 remove_worker(lines_surf, devices, workers, event.name)
+            elif event.type == PING:
+                send_ping(workers, pings, event.name, event.push)
 
         # # Respond to keypresses
         # pressed_keys = pygame.key.get_pressed()
@@ -175,6 +237,10 @@ def main():
         screen.fill((255, 255, 255))
 
         screen.blit(lines_surf, lines_surf.get_rect())
+
+        check_pings(pings)
+        pings.update()
+        pings.draw(screen)
 
         for device in devices:
             screen.blit(device.surf, device.rect)
