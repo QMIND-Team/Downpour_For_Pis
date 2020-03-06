@@ -53,10 +53,8 @@ class Device(pygame.sprite.Sprite):
             self.surf = self.images[0]
 
 
-def add_worker(devices, workers, font, name):
-    new_device = Device(font, name, 0, (SCREEN_HEIGHT // 4)*3)
-    devices.add(new_device)
-    workers.add(new_device)
+def reposition_workers(workers):
+    """Helper to reposition the workers once one is added or removed"""
     num = len(workers)
     if num % 2 == 0:
         for i, device in enumerate(workers):
@@ -67,6 +65,24 @@ def add_worker(devices, workers, font, name):
             device.rect.centerx = (SCREEN_WIDTH // 2) + (240 * (i - (num//2)))
             device.text_rect.centerx = device.rect.centerx
 
+
+def add_worker(devices, workers, font, name):
+    new_device = Device(font, name, 0, (SCREEN_HEIGHT // 4)*3)
+    devices.add(new_device)
+    workers.add(new_device)
+    reposition_workers(workers)
+
+
+def remove_worker(devices, workers, name):
+    sprites = workers.sprites()
+    to_remove = None
+    for sprite in sprites:
+        if sprite.name == name:
+            to_remove = sprite
+            break
+    devices.remove(sprite)
+    workers.remove(sprite)
+    reposition_workers(workers)
 
 def init():
     """Initialization stuff"""
@@ -88,14 +104,15 @@ def init():
     # Create user event
     CHANGE = pygame.USEREVENT+1
     ADD = pygame.USEREVENT+2
+    REMOVE = pygame.USEREVENT+3
 
-    return screen, clock, devices, CHANGE, ADD, myfont
+    return screen, clock, devices, CHANGE, ADD, REMOVE, myfont
 
 
 def main():
     """Main"""
     # Initialize
-    screen, clock, devices, CHANGE, ADD, myfont = init()
+    screen, clock, devices, CHANGE, ADD, REMOVE, myfont = init()
     workers = pygame.sprite.Group()
 
     # Main loop
@@ -118,6 +135,9 @@ def main():
                 elif event.key == pygame.K_c:
                     my_event = pygame.event.Event(ADD, name="C")
                     pygame.event.post(my_event)
+                elif event.key == pygame.K_s:
+                    my_event = pygame.event.Event(REMOVE, name="A")
+                    pygame.event.post(my_event)
             elif event.type == pygame.QUIT:
                 running = False
             elif event.type == CHANGE:
@@ -125,6 +145,8 @@ def main():
                     device.change_pic()
             elif event.type == ADD:
                 add_worker(devices, workers, myfont, event.name)
+            elif event.type == REMOVE:
+                remove_worker(devices, workers, event.name)
 
         # Respond to keypresses
         pressed_keys = pygame.key.get_pressed()
