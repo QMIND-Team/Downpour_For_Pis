@@ -53,6 +53,20 @@ class Device(pygame.sprite.Sprite):
             self.surf = self.images[0]
 
 
+def add_device(devices, clients, font, name):
+    new_device = Device(font, name, 0, (SCREEN_HEIGHT // 4)*3)
+    devices.add(new_device)
+    clients.add(new_device)
+    num = len(clients)
+    if num % 2 == 0:
+        for i, device in enumerate(clients):
+            device.rect.centerx = (SCREEN_WIDTH // 2) + 120 + (240 * (i - (num//2)))
+            device.text_rect.centerx = device.rect.centerx
+    else:
+        for i, device in enumerate(clients):
+            device.rect.centerx = (SCREEN_WIDTH // 2) + (240 * (i - (num//2)))
+            device.text_rect.centerx = device.rect.centerx
+
 
 def init():
     """Initialization stuff"""
@@ -65,22 +79,24 @@ def init():
     clock = pygame.time.Clock()
 
     # Create the sprites
-    manager = Device(myfont, "Manager", SCREEN_WIDTH//2, SCREEN_HEIGHT //6)
+    manager = Device(myfont, "Manager", SCREEN_WIDTH//2, SCREEN_HEIGHT //4)
 
-    # Collect the sprites
-    sprites = pygame.sprite.Group()
-    sprites.add(manager)
+    # Collect the devices
+    devices = pygame.sprite.Group()
+    devices.add(manager)
 
     # Create user event
     CHANGE = pygame.USEREVENT+1
+    ADD = pygame.USEREVENT+2
 
-    return screen, clock, sprites, CHANGE, myfont
-
+    return screen, clock, devices, CHANGE, ADD, myfont
 
 
 def main():
     """Main"""
-    screen, clock, sprites, CHANGE, myfont = init()
+    # Initialize
+    screen, clock, devices, CHANGE, ADD, myfont = init()
+    clients = pygame.sprite.Group()
 
     # Main loop
     running = True
@@ -93,23 +109,34 @@ def main():
                 elif event.key == pygame.K_SPACE:
                     my_event = pygame.event.Event(CHANGE)
                     pygame.event.post(my_event)
+                elif event.key == pygame.K_a:
+                    my_event = pygame.event.Event(ADD, name="A")
+                    pygame.event.post(my_event)
+                elif event.key == pygame.K_b:
+                    my_event = pygame.event.Event(ADD, name="B")
+                    pygame.event.post(my_event)
+                elif event.key == pygame.K_c:
+                    my_event = pygame.event.Event(ADD, name="C")
+                    pygame.event.post(my_event)
             elif event.type == pygame.QUIT:
                 running = False
             elif event.type == CHANGE:
-                for sprite in sprites:
-                    sprite.change_pic()
+                for device in devices:
+                    device.change_pic()
+            elif event.type == ADD:
+                add_device(devices, clients, myfont, event.name)
 
         # Respond to keypresses
         pressed_keys = pygame.key.get_pressed()
-        for sprite in sprites:
-            sprite.update(pressed_keys)
+        for device in devices:
+            device.update(pressed_keys)
 
         # Draw
         screen.fill((255, 255, 255))
 
-        for sprite in sprites:
-            screen.blit(sprite.surf, sprite.rect)
-            screen.blit(sprite.text_surf, sprite.text_rect)
+        for device in devices:
+            screen.blit(device.surf, device.rect)
+            screen.blit(device.text_surf, device.text_rect)
 
         pygame.display.flip()
 
