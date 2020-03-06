@@ -8,7 +8,7 @@ white = 255, 255, 255
 
 screen = pygame.display.set_mode(size)
 
-ball = pygame.image.load("tests\intro_ball.gif")
+ball = pygame.image.load("resources\intro_ball.gif")
 ballrect = ball.get_rect()
 
 while 1:

@@ -70,7 +70,7 @@ def main():
     screen = create_visual(devices)
 
     # Main loop
-    while 
+    while 1:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 
                 sys.exit()
