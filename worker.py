@@ -13,6 +13,9 @@ from messages import Message, Init, Init_Response, Push, Pull, Pull_Response, Te
 
 tf.compat.v1.logging.set_verbosity( tf.compat.v1.logging.ERROR)
 
+PUSH_INTERVAL = 5
+PULL_INTERVAL = 7
+
 # TODO: Rename these functions to reflect what we're actually pushing and pulling.
 # i.e. choose one of: push/pull_weights, push/pull_parameters, push/pull_gradients
 
@@ -99,14 +102,16 @@ def do_ml(model, cl: client):
     model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
+    
+    def downpour(batch, logs):
+        if batch % PUSH_INTERVAL == 0:
+            push_weights(model, cl)
+        if batch % PULL_INTERVAL == 0:
+            pull_parameters(model, cl)
 
-    model.fit(x_train, y_train, batch_size=128, epochs=10)
+    downpour_callback = keras.callbacks.LambdaCallback(on_batch_end=downpour)
 
-    if not push_weights(model, cl):
-        return
-
-    if not pull_parameters(model, cl):
-        return
+    model.fit(x_train, y_train, batch_size=128, epochs=10, callbacks=[downpour_callback])
 
 
 
