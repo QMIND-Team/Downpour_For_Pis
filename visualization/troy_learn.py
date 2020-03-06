@@ -6,7 +6,6 @@ import pygame.freetype
 
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
-
 UNDER_MANAGER = (SCREEN_WIDTH//2, SCREEN_HEIGHT//4 + 120)
 
 class Device(pygame.sprite.Sprite):
@@ -224,6 +223,9 @@ def main():
                     pygame.event.post(my_event)
                 elif event.key == pygame.K_p:
                     my_event = pygame.event.Event(PING, push=True, name="A")
+                    pygame.event.post(my_event)
+                elif event.key == pygame.K_l:
+                    my_event = pygame.event.Event(PING, push=False, name="B")
                     pygame.event.post(my_event)
             elif event.type == pygame.QUIT:
                 running = False
