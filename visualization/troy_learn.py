@@ -2,10 +2,14 @@
 import sys
 
 import pygame
+import pygame.freetype
+
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
 
 class Device(pygame.sprite.Sprite):
     """Device Object, extends """
-    def __init__(self, name):
+    def __init__(self, font, name, x, y):
         super(Device, self).__init__()
         self.active = True
         self.name = name
@@ -18,24 +22,29 @@ class Device(pygame.sprite.Sprite):
             temp_rect = temp_image.get_rect()
             new_image = pygame.transform.smoothscale(
                 temp_image,
-                (65, round((temp_rect.height/temp_rect.width)*65))
+                (120, round((temp_rect.height/temp_rect.width)*120))
             )
             self.images.append(new_image)
         self.surf = self.images[0]
         self.rect = self.surf.get_rect()
-        self.rect.center = (400, 300)
+        self.rect.center = (x, y)
+        self.text_surf, self.text_rect = pygame.freetype.Font.render(font, name)
+        self.text_rect.center = (self.rect.centerx, self.rect.centery+100)
     
-    def update(self, pressed_keys):
-        if pressed_keys[pygame.K_UP]:
-            self.rect.move_ip(0, -5)
-        if pressed_keys[pygame.K_DOWN]:
-            self.rect.move_ip(0, 5)
-        if pressed_keys[pygame.K_LEFT]:
-            self.rect.move_ip(-5, 0)
-        if pressed_keys[pygame.K_RIGHT]:
-            self.rect.move_ip(5, 0)
+    # def update(self, pressed_keys):
+    #     if pressed_keys[pygame.K_UP]:
+    #         self.rect.move_ip(0, -5)
+    #     if pressed_keys[pygame.K_DOWN]:
+    #         self.rect.move_ip(0, 5)
+    #     if pressed_keys[pygame.K_LEFT]:
+    #         self.rect.move_ip(-5, 0)
+    #     if pressed_keys[pygame.K_RIGHT]:
+    #         self.rect.move_ip(5, 0)
 
     def change_pic(self):
+        """Toggle the sprite's image.
+        We don't need to worry about the rects because the images are the same size.
+        """
         if self.active:
             self.active = False
             self.surf = self.images[1]
@@ -48,13 +57,15 @@ class Device(pygame.sprite.Sprite):
 def init():
     """Initialization stuff"""
     pygame.init()
-    size = width, height = (800, 600)
-    screen = pygame.display.set_mode(size)
+    myfont = pygame.freetype.SysFont('consolas', 30)
+    size = (SCREEN_WIDTH, SCREEN_HEIGHT)
+    screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
+    pygame.display.toggle_fullscreen()
     pygame.display.set_caption("CUCAI 2020 - Distributed Computing")
     clock = pygame.time.Clock()
 
     # Create the sprites
-    manager = Device("Manager")
+    manager = Device(myfont, "Manager", SCREEN_WIDTH//2, SCREEN_HEIGHT //6)
 
     # Collect the sprites
     sprites = pygame.sprite.Group()
@@ -63,13 +74,13 @@ def init():
     # Create user event
     CHANGE = pygame.USEREVENT+1
 
-    return screen, clock, sprites, CHANGE
+    return screen, clock, sprites, CHANGE, myfont
 
 
 
 def main():
     """Main"""
-    screen, clock, sprites, CHANGE = init()
+    screen, clock, sprites, CHANGE, myfont = init()
 
     # Main loop
     running = True
@@ -98,6 +109,7 @@ def main():
 
         for sprite in sprites:
             screen.blit(sprite.surf, sprite.rect)
+            screen.blit(sprite.text_surf, sprite.text_rect)
 
         pygame.display.flip()
 
