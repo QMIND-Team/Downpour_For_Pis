@@ -43,7 +43,7 @@ class Device(pygame.sprite.Sprite):
     #     if pressed_keys[pygame.K_RIGHT]:
     #         self.rect.move_ip(5, 0)
 
-    def change_pic(self):
+    def toggle(self):
         """Toggle the sprite's image.
         We don't need to worry about the rects because the images are the same size.
         """
@@ -154,6 +154,15 @@ def remove_worker(lines_surf, devices, workers, name):
     reposition_workers(workers, lines_surf)
 
 
+def toggle_worker(workers, name):
+    """Toggle a worker's state, by name"""
+    to_toggle = None
+    for worker in workers:
+        if worker.name == name:
+            to_toggle = worker
+    to_toggle.toggle()
+
+
 def init():
     """Initialize pygame and main game elements"""
     pygame.init()
@@ -220,7 +229,7 @@ def main():
                 running = False
             elif event.type == CHANGE:
                 for device in devices:
-                    device.change_pic()
+                    device.toggle()
             elif event.type == ADD:
                 add_worker(lines_surf, devices, workers, myfont, event.name)
             elif event.type == REMOVE:
