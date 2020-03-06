@@ -14,7 +14,7 @@ from messages import Init, Init_Response, Pull, Pull_Response, Push
 from messages import Message, Terminate, Empty
 import comms.server as srvr
 
-tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+# tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 def init_model():
     """Create the model.
@@ -31,23 +31,18 @@ def init_model():
     # input image dimensions
     img_rows, img_cols = 28, 28
 
-    (x_train, y_train), (x_test, y_test) = mnist.load_data()
+    # (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-    x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
-    x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
+    # x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
+    # x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
     input_shape = (img_rows, img_cols, 1)
 
     model = Sequential()
-    model.add(Conv2D(32, kernel_size=(3, 3),
-                    activation='relu',
-                    input_shape=input_shape))
-    model.add(Conv2D(64, (3, 3), activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
-    model.add(Flatten())
-    model.add(Dense(128, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(num_classes, activation='softmax'))
+    
+    model.add(keras.layers.Dense(512, activation="relu", input_shape=(784,)) )
+    model.add(keras.layers.Dense(512, activation="relu"))
+    # We need the activation function in this last layer to be "softmax" because we want the model to choose 1 out of the 10 classes
+    model.add(keras.layers.Dense(10, activation="softmax"))
 
     model.compile(loss=keras.losses.categorical_crossentropy,
                 optimizer=keras.optimizers.Adadelta(),

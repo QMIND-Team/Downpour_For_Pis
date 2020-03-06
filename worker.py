@@ -5,13 +5,40 @@ import os
 
 import tensorflow as tf
 import keras
-from keras.datasets import mnist
+# from keras.datasets import mnist
+from mnist import MNIST
 import numpy as np
 
 import comms.client as client
 from messages import Message, Init, Init_Response, Push, Pull, Pull_Response, Terminate, Empty
 
-tf.compat.v1.logging.set_verbosity( tf.compat.v1.logging.ERROR)
+# tf.compat.v1.logging.set_verbosity( tf.compat.v1.logging.ERROR)
+
+print('importing and formatting data')
+
+mnist_data_raw = MNIST('mnist_data')
+x_train_raw, y_train_raw = mnist_data_raw.load_training()
+x_test_raw, y_test_raw = mnist_data_raw.load_testing()
+#numpy will fuck up the shapes of the arrays if we do them all together so we have to do them one by one
+x_train = np.array(x_train_raw)
+y_train = np.array(y_train_raw)
+x_test = np.array(x_test_raw)
+y_test = np.array(y_test_raw)
+
+#reshaped the input data
+x_train = x_train.reshape(60000, 28*28)
+x_test = x_test.reshape(10000, 28*28)
+#changes the type of input to float since we are about to rescale it, which effectively divides it by something, which means we will need the decimal place
+x_train = x_train.astype("float32")
+x_test = x_test.astype("float32")
+#neural nets like input between 0 and 1, but images are recorded in values between 0 and 255, so we have to divide it by 255
+x_train = x_train/255.0
+x_test = x_test/255.0
+
+#the neural net will categorize the input data into 10 categories representing the 10 numbers that a single digit can be
+#this formats both the testing and training output data into 10 categories so that it can be used effectively
+y_train = keras.utils.to_categorical(y_train, 10)
+y_test = keras.utils.to_categorical(y_test, 10)
 
 PUSH_INTERVAL = 5
 PULL_INTERVAL = 7
@@ -74,30 +101,10 @@ def pull_parameters(model, cl: client):
 
 
 def do_ml(model, cl: client):
-    (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
     batch_size = 128
     num_classes = 10
     epochs = 2
-    img_rows, img_cols = 28, 28
-
-    # <https://keras.io/examples/mnist_cnn/>
-
-    x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
-    x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
-    input_shape = (img_rows, img_cols, 1)
-
-    x_train = x_train.astype('float32')
-    x_test = x_test.astype('float32')
-    x_train /= 255
-    x_test /= 255
-    print('x_train shape:', x_train.shape)
-    print(x_train.shape[0], 'train samples')
-    print(x_test.shape[0], 'test samples')
-
-    # convert class vectors to binary class matrices
-    y_train = keras.utils.to_categorical(y_train, num_classes)
-    y_test = keras.utils.to_categorical(y_test, num_classes)
 
     model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
