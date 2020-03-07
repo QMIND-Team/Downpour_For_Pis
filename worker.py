@@ -75,7 +75,8 @@ def push_weights(model, cl: client):
     for weight in weights_np:
         weights.append(weight.tolist())
     message.weights = weights
-    message.hostname = "Local Worker"
+    message.hostname = os.uname()[1]
+    #message.hostname = "Local Worker"
     response = send_and_receive(message, cl)
 
     if response.type == "terminate":
@@ -87,7 +88,8 @@ def push_weights(model, cl: client):
 def pull_parameters(model, cl: client):
     """Pull model weights from manager"""
     message = Pull()
-    message.hostname = "Local Worker"
+    message.hostname = os.uname()[1]
+    #message.hostname = "Local Worker"
     response = send_and_receive(message, cl)
 
     if response.type == "terminate":
@@ -135,8 +137,8 @@ def main():
     # Initialize
     cl = client.Client()
     init = Init()
-    #init.hostname = os.uname()[1]
-    init.hostname = "Local Worker"
+    init.hostname = os.uname()[1]
+    #init.hostname = "Local Worker"
 
     init_response = None
     while init_response is None:
