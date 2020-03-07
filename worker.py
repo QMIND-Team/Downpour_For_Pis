@@ -16,7 +16,7 @@ from messages import Message, Init, Init_Response, Push, Pull, Pull_Response, Te
 
 print('importing and formatting data')
 
-mnist_data_raw = MNIST('mnist_data')
+mnist_data_raw = MNIST('/home/pi/index0/mnist_data')
 x_train_raw, y_train_raw = mnist_data_raw.load_training()
 x_test_raw, y_test_raw = mnist_data_raw.load_testing()
 #numpy will fuck up the shapes of the arrays if we do them all together so we have to do them one by one
