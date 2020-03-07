@@ -6,7 +6,7 @@ import os
 import tensorflow as tf
 import keras
 # from keras.datasets import mnist
-from mnist import MNIST
+from mnist import MNIST # This is from the python-mnist package
 import numpy as np
 
 import comms.client as client

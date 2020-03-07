@@ -1,6 +1,7 @@
 """Manager"""
 
 import json
+import threading
 
 import tensorflow as tf
 import keras
@@ -13,6 +14,7 @@ import numpy as np
 from messages import Init, Init_Response, Pull, Pull_Response, Push 
 from messages import Message, Terminate, Empty
 import comms.server as srvr
+from visualization import visualization as vis
 
 # tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
@@ -101,6 +103,11 @@ def response_policy(model, msg_json: str):
     return resp
 
 def main():
+    # Initialize Visualization
+    vis_thread = threading.Thread(target=vis.main)
+    vis_thread.start()
+
+    # GO
     model = init_model()
     server = srvr.Server(model, response_policy)
     server.run()
