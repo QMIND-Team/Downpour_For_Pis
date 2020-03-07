@@ -36,6 +36,7 @@ class Pull(Message):
     def __init__(self, data=None):
         super().__init__()
         self.type = "pull"
+        self.hostname = ""
         if data:
             self.__dict__ = data
 
@@ -54,6 +55,7 @@ class Push(Message):
         super().__init__()
         self.type = "push"
         self.weights = ""
+        self.hostname = ""
         if data:
             self.__dict__ = data
 

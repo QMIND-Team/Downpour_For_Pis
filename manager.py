@@ -1,6 +1,8 @@
 """Manager"""
 
 import json
+import threading
+import pygame
 
 import tensorflow as tf
 import keras
@@ -13,6 +15,7 @@ import numpy as np
 from messages import Init, Init_Response, Pull, Pull_Response, Push 
 from messages import Message, Terminate, Empty
 import comms.server as srvr
+from visualization import visualization as vis
 
 # tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
@@ -56,15 +59,25 @@ def response_policy(model, msg_json: str):
 
     Returns: json formatted string
     """
+    # Create User Events (Fingers crossed that these stay in sync)
+    CHANGE = pygame.USEREVENT+1
+    ADD = pygame.USEREVENT+2
+    REMOVE = pygame.USEREVENT+3
+    PING = pygame.USEREVENT+4
+
     msg_dict = json.loads(msg_json)
 
     if msg_dict["type"] == "init":
         msg = Init(msg_dict)
+        my_event = pygame.event.Event(ADD, name=msg.hostname)
+        pygame.event.post(my_event)
         resp_obj = Init_Response()
         serialized = model.to_json()
         resp_obj.model = serialized
     elif msg_dict["type"] == "pull":
         msg = Pull(msg_dict)
+        my_event = pygame.event.Event(PING, push=False, name=msg.hostname)
+        pygame.event.post(my_event)
         resp_obj = Pull_Response()
         weights_np = model.get_weights()
         weights = []
@@ -73,6 +86,8 @@ def response_policy(model, msg_json: str):
         resp_obj.weights = weights
     elif msg_dict["type"] == "push":
         msg = Push(msg_dict)
+        my_event = pygame.event.Event(PING, push=True, name=msg.hostname)
+        pygame.event.post(my_event)
         remote_weights_np = []
         for remote_weight in msg.weights:
             remote_weights_np.append(np.array(remote_weight))
@@ -101,6 +116,11 @@ def response_policy(model, msg_json: str):
     return resp
 
 def main():
+    # Initialize Visualization
+    vis_thread = threading.Thread(target=vis.main)
+    vis_thread.start()
+
+    # GO
     model = init_model()
     server = srvr.Server(model, response_policy)
     server.run()

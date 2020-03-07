@@ -31,16 +31,6 @@ class Device(pygame.sprite.Sprite):
         self.rect.center = (x, y)
         self.text_surf, self.text_rect = pygame.freetype.Font.render(font, name)
         self.text_rect.center = (self.rect.centerx, self.rect.centery+100)
-    
-    # def update(self, pressed_keys):
-    #     if pressed_keys[pygame.K_UP]:
-    #         self.rect.move_ip(0, -5)
-    #     if pressed_keys[pygame.K_DOWN]:
-    #         self.rect.move_ip(0, 5)
-    #     if pressed_keys[pygame.K_LEFT]:
-    #         self.rect.move_ip(-5, 0)
-    #     if pressed_keys[pygame.K_RIGHT]:
-    #         self.rect.move_ip(5, 0)
 
     def toggle(self):
         """Toggle the sprite's image.
@@ -197,7 +187,6 @@ def main():
     # Initialize
     screen, lines_surf, clock, devices, workers, pings, CHANGE, ADD, REMOVE, PING, myfont = init()
 
-
     # Main loop
     running = True
     while running:
@@ -207,7 +196,7 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     running = False
                 elif event.key == pygame.K_SPACE:
-                    my_event = pygame.event.Event(CHANGE)
+                    my_event = pygame.event.Event(CHANGE, name="Manager")
                     pygame.event.post(my_event)
                 elif event.key == pygame.K_a:
                     my_event = pygame.event.Event(ADD, name="A")
@@ -231,18 +220,15 @@ def main():
                 running = False
             elif event.type == CHANGE:
                 for device in devices:
-                    device.toggle()
+                    if device.name == event.name:
+                        device.toggle()
+                        break
             elif event.type == ADD:
                 add_worker(lines_surf, devices, workers, myfont, event.name)
             elif event.type == REMOVE:
                 remove_worker(lines_surf, devices, workers, event.name)
             elif event.type == PING:
                 send_ping(workers, pings, event.name, event.push)
-
-        # # Respond to keypresses
-        # pressed_keys = pygame.key.get_pressed()
-        # for device in devices:
-        #     device.update(pressed_keys)
 
         # Draw
         screen.fill((255, 255, 255))

@@ -6,7 +6,7 @@ import os
 import tensorflow as tf
 import keras
 # from keras.datasets import mnist
-from mnist import MNIST
+from mnist import MNIST # This is from the python-mnist package
 import numpy as np
 
 import comms.client as client
@@ -40,8 +40,8 @@ x_test = x_test/255.0
 y_train = keras.utils.to_categorical(y_train, 10)
 y_test = keras.utils.to_categorical(y_test, 10)
 
-PUSH_INTERVAL = 5
-PULL_INTERVAL = 7
+PUSH_INTERVAL = 50
+PULL_INTERVAL = 70
 
 # TODO: Rename these functions to reflect what we're actually pushing and pulling.
 # i.e. choose one of: push/pull_weights, push/pull_parameters, push/pull_gradients
@@ -75,6 +75,8 @@ def push_weights(model, cl: client):
     for weight in weights_np:
         weights.append(weight.tolist())
     message.weights = weights
+    message.hostname = os.uname()[1]
+    #message.hostname = "Local Worker"
     response = send_and_receive(message, cl)
 
     if response.type == "terminate":
@@ -86,6 +88,8 @@ def push_weights(model, cl: client):
 def pull_parameters(model, cl: client):
     """Pull model weights from manager"""
     message = Pull()
+    message.hostname = os.uname()[1]
+    #message.hostname = "Local Worker"
     response = send_and_receive(message, cl)
 
     if response.type == "terminate":
@@ -134,6 +138,7 @@ def main():
     cl = client.Client()
     init = Init()
     init.hostname = os.uname()[1]
+    #init.hostname = "Local Worker"
 
     init_response = None
     while init_response is None:
