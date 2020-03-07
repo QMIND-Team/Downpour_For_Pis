@@ -74,3 +74,12 @@ class Empty(Message):
         self.type = "empty"
         if data:
             self.__dict__ = data
+
+class Heartbeat(Message):
+    """Keep Alive Message"""
+    def __init__(self, data=None):
+        super().__init__()
+        self.type = "heartbeat"
+        self.hostname = ""
+        if data:
+            self.__dict__ = data

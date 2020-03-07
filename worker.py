@@ -10,13 +10,14 @@ from mnist import MNIST # This is from the python-mnist package
 import numpy as np
 
 import comms.client as client
-from messages import Message, Init, Init_Response, Push, Pull, Pull_Response, Terminate, Empty
+from messages import Message, Init, Init_Response, Push, Pull, Pull_Response, Terminate, Empty, Heartbeat
 
 # tf.compat.v1.logging.set_verbosity( tf.compat.v1.logging.ERROR)
 
 print('importing and formatting data')
 
 mnist_data_raw = MNIST('/home/pi/index0/mnist_data')
+#mnist_data_raw = MNIST('mnist_data')
 x_train_raw, y_train_raw = mnist_data_raw.load_training()
 x_test_raw, y_test_raw = mnist_data_raw.load_testing()
 #numpy will fuck up the shapes of the arrays if we do them all together so we have to do them one by one
@@ -115,6 +116,11 @@ def do_ml(model, cl: client):
               metrics=['accuracy'])
     
     def downpour(batch, logs):
+        if batch % 5 == 0:
+            tmp = Heartbeat()
+            tmp.hostname = os.uname()[1]
+            #tmp.hostname = "Local Worker"
+            send_and_receive(tmp, cl)
         if batch % PUSH_INTERVAL == 0:
             push_weights(model, cl)
         if batch % PULL_INTERVAL == 0:
