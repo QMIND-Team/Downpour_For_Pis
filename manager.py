@@ -71,16 +71,16 @@ def worker_watchdog():
         for worker in list(workerlist):
             now = time.time()
             if worker.active:
-                if now - worker.last_heard > 5:
+                if now - worker.last_heard > 8:
                     worker.active = False
                     my_event = pygame.event.Event(CHANGE, name=worker.name)
                     pygame.event.post(my_event)
             else:
-                if now - worker.last_heard < 5:
+                if now - worker.last_heard < 8:
                     worker.active = True
                     my_event = pygame.event.Event(CHANGE, name=worker.name)
                     pygame.event.post(my_event)
-                elif now - worker.last_heard > 10:
+                elif now - worker.last_heard > 12:
                     workerlist.remove(worker)
                     my_event = pygame.event.Event(REMOVE, name=worker.name)
                     pygame.event.post(my_event)
