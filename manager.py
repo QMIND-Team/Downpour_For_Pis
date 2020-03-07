@@ -69,8 +69,8 @@ def response_policy(model, msg_json: str):
 
     if msg_dict["type"] == "init":
         msg = Init(msg_dict)
-        # my_event = pygame.event.Event(ADD, name=msg.hostname)
-        # pygame.event.post(my_event)
+        my_event = pygame.event.Event(ADD, name=msg.hostname)
+        pygame.event.post(my_event)
         resp_obj = Init_Response()
         serialized = model.to_json()
         resp_obj.model = serialized
