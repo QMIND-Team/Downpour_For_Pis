@@ -1,11 +1,3 @@
 # index0
 
-Distributed Computing + Machine Learning = ???
-
-## Comms module
-
-Communicate files between server and client. 
-
-### Outstanding issues
-
-* Sends multiple cofirmation messages once single "packet" size is exceeded.
+Our team focused on developing an effective distributed machine learning training infrastructure on an arbitrary number of general-purpose computers. After running the server script, any number of workers can be instantiated and will communicate with the server script on a local network.
